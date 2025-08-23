@@ -43,6 +43,7 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
   }, {} as Record<string, Session[]>);
 
   const formatDateDisplay = (dateString: string) => {
+    console.log('Formatting date string:', dateString);
     try {
       let date: Date;
       
@@ -51,25 +52,33 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
         // Handle DD.MM.YYYY format
         const [day, month, year] = dateString.split('.');
         date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        console.log(`Parsed DD.MM.YYYY: ${day}/${month}/${year} -> ${date}`);
       } else if (dateString.includes('/')) {
         // Handle MM/DD/YYYY format
         date = new Date(dateString);
+        console.log(`Parsed MM/DD/YYYY: ${dateString} -> ${date}`);
       } else {
         // Fallback
         date = new Date(dateString);
+        console.log(`Fallback parse: ${dateString} -> ${date}`);
       }
 
       if (isNaN(date.getTime())) {
+        console.log('Date parsing failed, returning original string:', dateString);
         return dateString; // Return original if parsing fails
       }
 
-      return date.toLocaleDateString('en-US', {
+      const formatted = date.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       });
+      
+      console.log(`Formatted date: ${dateString} -> ${formatted}`);
+      return formatted;
     } catch (error) {
+      console.log('Date formatting error:', error, 'returning original:', dateString);
       return dateString; // Return original if parsing fails
     }
   };

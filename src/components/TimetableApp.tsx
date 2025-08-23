@@ -33,6 +33,7 @@ export const TimetableApp = () => {
   const { toast } = useToast();
 
   const parseCSV = (csvText: string): Session[] => {
+    console.log('Parsing CSV text:', csvText.substring(0, 300));
     const lines = csvText.split('\n');
     const sessions: Session[] = [];
     
@@ -42,6 +43,8 @@ export const TimetableApp = () => {
       
       const [date, time, instructor, session, location] = line.split(',').map(field => field.trim());
       
+      console.log(`Line ${i}: date="${date}", time="${time}", instructor="${instructor}", session="${session}"`);
+      
       if (date && time && (instructor || session)) {
         // Handle different date formats
         let parsedDate = date;
@@ -49,6 +52,7 @@ export const TimetableApp = () => {
           // Handle DD.MM.YYYY format
           const [day, month, year] = date.split('.');
           parsedDate = `${month}/${day}/${year}`;
+          console.log(`Converted date from "${date}" to "${parsedDate}"`);
         }
         
         sessions.push({
@@ -61,17 +65,26 @@ export const TimetableApp = () => {
       }
     }
     
+    console.log('Final parsed sessions:', sessions);
     return sessions;
   };
 
   const fetchTimetableData = async () => {
     setLoading(true);
     try {
+      console.log('Fetching data from URLs:', CSV_URLS);
+      
       const [mainResponse, path1Response, path2Response] = await Promise.all([
         fetch(`${CSV_URLS.main}&timestamp=${Date.now()}`),
         fetch(`${CSV_URLS.path1}&timestamp=${Date.now()}`),
         fetch(`${CSV_URLS.path2}&timestamp=${Date.now()}`)
       ]);
+
+      console.log('Response statuses:', {
+        main: mainResponse.status,
+        path1: path1Response.status,
+        path2: path2Response.status
+      });
 
       const [mainCSV, path1CSV, path2CSV] = await Promise.all([
         mainResponse.text(),
@@ -79,11 +92,21 @@ export const TimetableApp = () => {
         path2Response.text()
       ]);
 
-      setSessions({
+      console.log('Raw CSV data:', {
+        main: mainCSV.substring(0, 200),
+        path1: path1CSV.substring(0, 200),
+        path2: path2CSV.substring(0, 200)
+      });
+
+      const parsedSessions = {
         main: parseCSV(mainCSV),
         path1: parseCSV(path1CSV),
         path2: parseCSV(path2CSV)
-      });
+      };
+
+      console.log('Parsed sessions:', parsedSessions);
+
+      setSessions(parsedSessions);
 
       setLastUpdated(new Date());
       toast({
