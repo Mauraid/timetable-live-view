@@ -229,7 +229,9 @@ export const TimetableApp = () => {
                   </div>
                 </div>
 
-                <SessionDropdown sessions={sessions.main} />
+                <div className="mb-6">
+                  <SessionDropdown sessions={sessions.main} />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -246,7 +248,9 @@ export const TimetableApp = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SessionDropdown sessions={sessions.path1} />
+                <div className="mb-6">
+                  <SessionDropdown sessions={sessions.path1} />
+                </div>
                 <TimetableGrid sessions={sessions.path1} loading={loading} />
               </CardContent>
             </Card>
@@ -264,7 +268,9 @@ export const TimetableApp = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SessionDropdown sessions={sessions.path2} />
+                <div className="mb-6">
+                  <SessionDropdown sessions={sessions.path2} />
+                </div>
                 <TimetableGrid sessions={sessions.path2} loading={loading} />
               </CardContent>
             </Card>
