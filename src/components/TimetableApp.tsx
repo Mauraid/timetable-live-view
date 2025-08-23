@@ -43,8 +43,16 @@ export const TimetableApp = () => {
       const [date, time, instructor, session, location] = line.split(',').map(field => field.trim());
       
       if (date && time && (instructor || session)) {
+        // Handle different date formats
+        let parsedDate = date;
+        if (date.includes('.')) {
+          // Handle DD.MM.YYYY format
+          const [day, month, year] = date.split('.');
+          parsedDate = `${month}/${day}/${year}`;
+        }
+        
         sessions.push({
-          date,
+          date: parsedDate,
           time,
           instructor: instructor || '',
           session: session || '',
@@ -60,9 +68,9 @@ export const TimetableApp = () => {
     setLoading(true);
     try {
       const [mainResponse, path1Response, path2Response] = await Promise.all([
-        fetch(`${CSV_URLS.main}?timestamp=${Date.now()}`),
-        fetch(`${CSV_URLS.path1}?timestamp=${Date.now()}`),
-        fetch(`${CSV_URLS.path2}?timestamp=${Date.now()}`)
+        fetch(`${CSV_URLS.main}&timestamp=${Date.now()}`),
+        fetch(`${CSV_URLS.path1}&timestamp=${Date.now()}`),
+        fetch(`${CSV_URLS.path2}&timestamp=${Date.now()}`)
       ]);
 
       const [mainCSV, path1CSV, path2CSV] = await Promise.all([
@@ -156,7 +164,7 @@ export const TimetableApp = () => {
               Path 1
             </TabsTrigger>
             <TabsTrigger value="path2" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Path 2
+              Kids Path
             </TabsTrigger>
           </TabsList>
 
@@ -260,11 +268,11 @@ export const TimetableApp = () => {
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-accent flex items-center gap-2">
-                  <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Path 2</Badge>
-                  Alternative Training Track
+                  <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Kids Path</Badge>
+                  Kids Training Program
                 </CardTitle>
                 <CardDescription>
-                  Alternative approach for specialized training (Dec 10-13, 2025)
+                  Specialized training program for young skaters (Dec 10-13, 2025)
                 </CardDescription>
               </CardHeader>
               <CardContent>

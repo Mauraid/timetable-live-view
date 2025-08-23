@@ -42,6 +42,38 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
     return acc;
   }, {} as Record<string, Session[]>);
 
+  const formatDateDisplay = (dateString: string) => {
+    try {
+      let date: Date;
+      
+      // Handle different date formats
+      if (dateString.includes('.')) {
+        // Handle DD.MM.YYYY format
+        const [day, month, year] = dateString.split('.');
+        date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      } else if (dateString.includes('/')) {
+        // Handle MM/DD/YYYY format
+        date = new Date(dateString);
+      } else {
+        // Fallback
+        date = new Date(dateString);
+      }
+
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original if parsing fails
+      }
+
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return dateString; // Return original if parsing fails
+    }
+  };
+
   const getSessionBadgeColor = (sessionName: string) => {
     const session = sessionName.toLowerCase();
     if (session.includes('yoga')) return 'bg-secondary text-secondary-foreground';
@@ -60,12 +92,7 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="w-5 h-5 text-primary" />
             <h3 className="text-xl font-semibold text-foreground">
-              {new Date(date).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {formatDateDisplay(date)}
             </h3>
           </div>
           
