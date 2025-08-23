@@ -194,7 +194,7 @@ export const TimetableApp = () => {
           <TabsContent value="introduction" className="space-y-6">
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-primary">Welcome to Our Skating Program</CardTitle>
+                <CardTitle className="text-2xl text-primary">Welcome to Our Skate Camp</CardTitle>
                 <CardDescription className="text-lg">
                   Professional skating training with expert instructors
                 </CardDescription>
@@ -207,7 +207,7 @@ export const TimetableApp = () => {
                     </div>
                     <h3 className="font-semibold mb-2">Expert Instructors</h3>
                     <p className="text-sm text-muted-foreground">
-                      Learn from experienced professionals including Kris, Si, Tomasz, Mike, Mauraid, and Tomy
+                      Learn from experienced professionals
                     </p>
                   </div>
 
@@ -226,8 +226,7 @@ export const TimetableApp = () => {
                       <MapPin className="w-6 h-6 text-primary-foreground" />
                     </div>
                     <h3 className="font-semibold mb-2">Multiple Disciplines</h3>
-                    <p className="text-sm text-muted-foreground">
-                      From Mobile Yoga to Speed Skating, covering all aspects of skating
+                    <p className="text-sm text-muted-foreground"</p>
                     </p>
                   </div>
                 </div>
