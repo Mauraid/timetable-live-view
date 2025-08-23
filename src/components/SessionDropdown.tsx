@@ -47,7 +47,7 @@ export const SessionDropdown = ({ sessions }: SessionDropdownProps) => {
             <SelectValue placeholder="Select a session type" />
           </SelectTrigger>
           <SelectContent className="bg-popover/95 backdrop-blur-sm border-0 shadow-medium">
-            <SelectItem value="">All Sessions</SelectItem>
+            <SelectItem value="all">All Sessions</SelectItem>
             {uniqueSessions.map((session) => (
               <SelectItem key={session} value={session}>
                 <div className="flex items-center gap-2">
@@ -60,7 +60,7 @@ export const SessionDropdown = ({ sessions }: SessionDropdownProps) => {
         </Select>
       </div>
 
-      {selectedSession && selectedSessionData.length > 0 && (
+      {selectedSession && selectedSession !== "all" && selectedSessionData.length > 0 && (
         <Card className="shadow-medium border-0 bg-card/90 backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
