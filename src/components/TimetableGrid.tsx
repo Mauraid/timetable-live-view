@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, User, MapPin, Calendar } from 'lucide-react';
+import { MapModal } from './MapModal';
 
 interface Session {
   date: string;
@@ -17,6 +19,7 @@ interface TimetableGridProps {
 }
 
 export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -139,10 +142,15 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
                     )}
 
                     {session.location && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="w-4 h-4" />
-                        <span>{session.location}</span>
-                      </div>
+                      <button
+                        onClick={() => setSelectedLocation(session.location)}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer group"
+                      >
+                        <MapPin className="w-4 h-4 group-hover:text-primary" />
+                        <span className="underline decoration-dotted underline-offset-2 group-hover:decoration-solid">
+                          {session.location}
+                        </span>
+                      </button>
                     )}
                   </div>
                 </CardContent>
@@ -159,6 +167,12 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
           <p className="text-muted-foreground">Check back later for updated schedule information.</p>
         </div>
       )}
+
+      <MapModal
+        isOpen={!!selectedLocation}
+        onClose={() => setSelectedLocation(null)}
+        location={selectedLocation || ''}
+      />
     </div>
   );
 };
