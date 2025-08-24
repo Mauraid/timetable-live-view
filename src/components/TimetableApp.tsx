@@ -226,7 +226,8 @@ export const TimetableApp = () => {
                       <MapPin className="w-6 h-6 text-primary-foreground" />
                     </div>
                     <h3 className="font-semibold mb-2">Multiple Disciplines</h3>
-                    <p className="text-sm text-muted-foreground"</p>
+                    <p className="text-sm text-muted-foreground">
+                      Various skating disciplines and techniques
                     </p>
                   </div>
                 </div>
