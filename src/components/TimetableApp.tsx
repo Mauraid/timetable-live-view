@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, MapPin, Download, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { TimetableGrid } from './TimetableGrid';
-import { SessionDropdown } from './SessionDropdown';
 
 interface Session {
   date: string;
@@ -152,11 +151,8 @@ export const TimetableApp = () => {
             <Calendar className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            Skating Program
+            Skate Camp
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Professional skating training schedule with multiple learning paths
-          </p>
           
           <div className="flex flex-wrap justify-center gap-4 mt-6">
             <Button 
@@ -224,7 +220,7 @@ export const TimetableApp = () => {
                     </div>
                     <h3 className="font-semibold mb-2">Structured Schedule</h3>
                     <p className="text-sm text-muted-foreground">
-                      Daily sessions from 9:00 AM to 5:00 PM with evening activities
+                      Daily structured sessions with evening activities
                     </p>
                   </div>
 
@@ -266,10 +262,6 @@ export const TimetableApp = () => {
                     </div>
                   </div>
                 </div>
-
-                <div className="mb-6">
-                  <SessionDropdown sessions={sessions.main} />
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -279,16 +271,12 @@ export const TimetableApp = () => {
               <CardHeader>
                 <CardTitle className="text-2xl text-secondary flex items-center gap-2">
                   <Badge variant="secondary" className="text-lg px-4 py-1">Path 1</Badge>
-                  Intensive Training Track
                 </CardTitle>
                 <CardDescription>
-                  Focused training program for advanced skaters (Dec 10-13, 2025)
+                  (Dec 10-13, 2025)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="mb-6">
-                  <SessionDropdown sessions={sessions.path1} />
-                </div>
                 <TimetableGrid sessions={sessions.path1} loading={loading} />
               </CardContent>
             </Card>
@@ -299,16 +287,12 @@ export const TimetableApp = () => {
               <CardHeader>
                 <CardTitle className="text-2xl text-accent flex items-center gap-2">
                   <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Kids Path</Badge>
-                  Kids Training Program
                 </CardTitle>
                 <CardDescription>
-                  Specialized training program for young skaters (Dec 10-13, 2025)
+                  (Dec 10-13, 2025)
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="mb-6">
-                  <SessionDropdown sessions={sessions.path2} />
-                </div>
                 <TimetableGrid sessions={sessions.path2} loading={loading} />
               </CardContent>
             </Card>
