@@ -23,6 +23,8 @@ const CSV_URLS = {
 };
 
 export const TimetableApp = () => {
+  console.log('TimetableApp component is rendering');
+  
   const [sessions, setSessions] = useState<{
     main: Session[];
     path1: Session[];
@@ -31,6 +33,9 @@ export const TimetableApp = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { toast } = useToast();
+
+  console.log('Current loading state:', loading);
+  console.log('Current sessions:', sessions);
 
   const parseCSV = (csvText: string): Session[] => {
     console.log('Parsing CSV text:', csvText.substring(0, 300));
@@ -136,6 +141,8 @@ export const TimetableApp = () => {
     });
   };
 
+  console.log('About to render TimetableApp JSX');
+  
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8">
