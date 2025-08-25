@@ -16,10 +16,14 @@ interface Session {
 interface TimetableGridProps {
   sessions: Session[];
   loading: boolean;
+  selectedDate?: string | null;
 }
 
-export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
+export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGridProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  
+  // Filter sessions by selected date if provided
+  const filteredSessions = selectedDate ? sessions.filter(session => session.date === selectedDate) : sessions;
   if (loading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -37,7 +41,7 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
     );
   }
 
-  const groupedSessions = sessions.reduce((acc, session) => {
+  const groupedSessions = filteredSessions.reduce((acc, session) => {
     if (!acc[session.date]) {
       acc[session.date] = [];
     }
@@ -160,7 +164,7 @@ export const TimetableGrid = ({ sessions, loading }: TimetableGridProps) => {
         </div>
       ))}
 
-      {sessions.length === 0 && !loading && (
+      {filteredSessions.length === 0 && !loading && (
         <div className="text-center py-12">
           <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-muted-foreground mb-2">No sessions scheduled</h3>

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, MapPin, Download, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { TimetableGrid } from './TimetableGrid';
+import { DateDropdown } from './DateDropdown';
 
 interface Session {
   date: string;
@@ -31,6 +32,8 @@ export const TimetableApp = () => {
   }>({ main: [], path1: [], path2: [] });
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [selectedDatePath1, setSelectedDatePath1] = useState<string | null>(null);
+  const [selectedDatePath2, setSelectedDatePath2] = useState<string | null>(null);
   const { toast } = useToast();
 
   console.log('Current loading state:', loading);
@@ -277,7 +280,16 @@ export const TimetableApp = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TimetableGrid sessions={sessions.path1} loading={loading} />
+                <DateDropdown 
+                  sessions={sessions.path1} 
+                  selectedDate={selectedDatePath1}
+                  onDateSelect={setSelectedDatePath1}
+                />
+                <TimetableGrid 
+                  sessions={sessions.path1} 
+                  loading={loading}
+                  selectedDate={selectedDatePath1}
+                />
               </CardContent>
             </Card>
           </TabsContent>
@@ -293,7 +305,16 @@ export const TimetableApp = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <TimetableGrid sessions={sessions.path2} loading={loading} />
+                <DateDropdown 
+                  sessions={sessions.path2} 
+                  selectedDate={selectedDatePath2}
+                  onDateSelect={setSelectedDatePath2}
+                />
+                <TimetableGrid 
+                  sessions={sessions.path2} 
+                  loading={loading}
+                  selectedDate={selectedDatePath2}
+                />
               </CardContent>
             </Card>
           </TabsContent>
