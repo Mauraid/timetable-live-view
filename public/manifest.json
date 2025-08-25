@@ -1,7 +1,7 @@
 {
-  "name": "Skating Program Timetable",
-  "short_name": "Skating Schedule",
-  "description": "Professional skating training schedule with multiple learning paths",
+  "name": "Skate Camp World Timetable",
+  "short_name": "Skate Camp",
+  "description": "Skate camp training schedule with multiple learning paths",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/pwa-192.png",
+      "src": "/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/pwa-512.png",
+      "src": "/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
