@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Clock, User, MapPin, Calendar } from 'lucide-react';
-import { MapModal } from './MapModal';
+import { Clock, User, MapPin, Calendar, X } from 'lucide-react';
+import { Map } from './Map';
 
 interface Session {
   date: string;
@@ -164,6 +164,29 @@ export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGrid
         </div>
       ))}
 
+      {/* Inline Map Display */}
+      {selectedLocation && (
+        <Card className="shadow-medium border-0 bg-card/90 backdrop-blur-sm">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                <h3 className="font-semibold">Location: {selectedLocation}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedLocation(null)}
+                className="p-1 hover:bg-accent rounded-full transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="h-[400px]">
+              <Map location={selectedLocation} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {filteredSessions.length === 0 && !loading && (
         <div className="text-center py-12">
           <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
@@ -171,12 +194,6 @@ export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGrid
           <p className="text-muted-foreground">Check back later for updated schedule information.</p>
         </div>
       )}
-
-      <MapModal
-        isOpen={!!selectedLocation}
-        onClose={() => setSelectedLocation(null)}
-        location={selectedLocation || ''}
-      />
     </div>
   );
 };
