@@ -190,7 +190,7 @@ export const TimetableApp = () => {
               Introduction
             </TabsTrigger>
             <TabsTrigger value="path1" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Path 1
+              Skate CampBCN
             </TabsTrigger>
             <TabsTrigger value="path2" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
               Kids Path
@@ -273,7 +273,7 @@ export const TimetableApp = () => {
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-secondary flex items-center gap-2">
-                  <Badge variant="secondary" className="text-lg px-4 py-1">Path 1</Badge>
+                  <Badge variant="secondary" className="text-lg px-4 py-1">Skate CampBCN</Badge>
                 </CardTitle>
                 <CardDescription>
                   (Dec 10-13, 2025)
