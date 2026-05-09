@@ -18,6 +18,7 @@ interface Session {
 
 const CSV_URLS = {
   main: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?output=csv',
+  icp: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=0&single=true&output=csv',
   path1: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=122183591&single=true&output=csv',
   path2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub?gid=1377983576&single=true&output=csv'
 };
@@ -27,11 +28,13 @@ export const TimetableApp = () => {
   
   const [sessions, setSessions] = useState<{
     main: Session[];
+    icp: Session[];
     path1: Session[];
     path2: Session[];
-  }>({ main: [], path1: [], path2: [] });
+  }>({ main: [], icp: [], path1: [], path2: [] });
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [selectedDateIcp, setSelectedDateIcp] = useState<string | null>(null);
   const [selectedDatePath1, setSelectedDatePath1] = useState<string | null>(null);
   const [selectedDatePath2, setSelectedDatePath2] = useState<string | null>(null);
   const { toast } = useToast();
@@ -81,32 +84,37 @@ export const TimetableApp = () => {
     try {
       console.log('Fetching data from URLs:', CSV_URLS);
       
-      const [mainResponse, path1Response, path2Response] = await Promise.all([
+      const [mainResponse, icpResponse, path1Response, path2Response] = await Promise.all([
         fetch(`${CSV_URLS.main}&timestamp=${Date.now()}`),
+        fetch(`${CSV_URLS.icp}&timestamp=${Date.now()}`),
         fetch(`${CSV_URLS.path1}&timestamp=${Date.now()}`),
         fetch(`${CSV_URLS.path2}&timestamp=${Date.now()}`)
       ]);
 
       console.log('Response statuses:', {
         main: mainResponse.status,
+        icp: icpResponse.status,
         path1: path1Response.status,
         path2: path2Response.status
       });
 
-      const [mainCSV, path1CSV, path2CSV] = await Promise.all([
+      const [mainCSV, icpCSV, path1CSV, path2CSV] = await Promise.all([
         mainResponse.text(),
+        icpResponse.text(),
         path1Response.text(),
         path2Response.text()
       ]);
 
       console.log('Raw CSV data:', {
         main: mainCSV.substring(0, 200),
+        icp: icpCSV.substring(0, 200),
         path1: path1CSV.substring(0, 200),
         path2: path2CSV.substring(0, 200)
       });
 
       const parsedSessions = {
         main: parseCSV(mainCSV),
+        icp: parseCSV(icpCSV),
         path1: parseCSV(path1CSV),
         path2: parseCSV(path2CSV)
       };
@@ -185,15 +193,18 @@ export const TimetableApp = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="introduction" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto mb-8 bg-card shadow-soft">
+          <TabsList className="grid w-full grid-cols-4 max-w-lg mx-auto mb-8 bg-card shadow-soft">
             <TabsTrigger value="introduction" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Introduction
+              Intro
+            </TabsTrigger>
+            <TabsTrigger value="icp" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
+              ICP
             </TabsTrigger>
             <TabsTrigger value="path1" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Skate CampBCN
+              SkateCamp BCN
             </TabsTrigger>
             <TabsTrigger value="path2" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Kids Path
+              Kids path
             </TabsTrigger>
           </TabsList>
 
@@ -269,11 +280,36 @@ export const TimetableApp = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="icp" className="space-y-6">
+            <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-2xl text-primary flex items-center gap-2">
+                  <Badge className="bg-primary text-primary-foreground text-lg px-4 py-1">ICP</Badge>
+                </CardTitle>
+                <CardDescription>
+                  (Dec 10-13, 2025)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DateDropdown 
+                  sessions={sessions.icp} 
+                  selectedDate={selectedDateIcp}
+                  onDateSelect={setSelectedDateIcp}
+                />
+                <TimetableGrid 
+                  sessions={sessions.icp} 
+                  loading={loading}
+                  selectedDate={selectedDateIcp}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="path1" className="space-y-6">
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-secondary flex items-center gap-2">
-                  <Badge variant="secondary" className="text-lg px-4 py-1">Skate CampBCN</Badge>
+                  <Badge variant="secondary" className="text-lg px-4 py-1">SkateCamp BCN</Badge>
                 </CardTitle>
                 <CardDescription>
                   (Dec 10-13, 2025)
@@ -298,7 +334,7 @@ export const TimetableApp = () => {
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-accent flex items-center gap-2">
-                  <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Kids Path</Badge>
+                  <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Kids path</Badge>
                 </CardTitle>
                 <CardDescription>
                   (Dec 10-13, 2025)
