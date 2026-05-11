@@ -11,6 +11,7 @@ interface Session {
   instructor: string;
   session: string;
   location: string;
+  extra?: string;
 }
 
 interface TimetableGridProps {
