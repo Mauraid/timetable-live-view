@@ -191,7 +191,7 @@ export const TimetableApp = () => {
             <Calendar className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            Skate Camp
+            Skate Camp World
           </h1>
           
           <div className="flex flex-wrap justify-center gap-4 mt-6">
@@ -240,7 +240,7 @@ export const TimetableApp = () => {
           <TabsContent value="introduction" className="space-y-6">
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-primary">Welcome to Our Skate Camp</CardTitle>
+                <CardTitle className="text-2xl text-primary">Welcome to Our Skate Camp World</CardTitle>
                 <CardDescription className="text-lg">
                   Professional skating training with expert instructors
                 </CardDescription>
