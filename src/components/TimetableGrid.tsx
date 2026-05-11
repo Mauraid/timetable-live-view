@@ -11,6 +11,7 @@ interface Session {
   instructor: string;
   session: string;
   location: string;
+  extra?: string;
 }
 
 interface TimetableGridProps {
@@ -143,6 +144,26 @@ export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGrid
                         <User className="w-4 h-4" />
                         <span>{session.instructor}</span>
                       </div>
+                    )}
+
+                    {session.extra && (
+                      session.extra.includes('<iframe') ? (
+                        <div
+                          className="w-full overflow-hidden rounded-md [&_iframe]:w-full [&_iframe]:h-48 [&_iframe]:border-0"
+                          dangerouslySetInnerHTML={{ __html: session.extra }}
+                        />
+                      ) : session.extra.startsWith('http') ? (
+                        <a
+                          href={session.extra}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary underline break-all"
+                        >
+                          {session.extra}
+                        </a>
+                      ) : (
+                        <p className="text-sm text-muted-foreground whitespace-pre-line">{session.extra}</p>
+                      )
                     )}
 
                     {session.location && (
