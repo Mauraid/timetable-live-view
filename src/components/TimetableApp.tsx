@@ -14,6 +14,7 @@ interface Session {
   instructor: string;
   session: string;
   location: string;
+  extra?: string;
 }
 
 const CSV_URLS = {
