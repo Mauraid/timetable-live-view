@@ -43,40 +43,68 @@ export const TimetableApp = () => {
   console.log('Current loading state:', loading);
   console.log('Current sessions:', sessions);
 
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (c === ',' && !inQuotes) {
+        result.push(cur.trim());
+        cur = '';
+      } else {
+        cur += c;
+      }
+    }
+    result.push(cur.trim());
+    return result;
+  };
+
   const parseCSV = (csvText: string): Session[] => {
-    console.log('Parsing CSV text:', csvText.substring(0, 300));
-    const lines = csvText.split('\n');
+    // Split by newlines but respect quoted fields
+    const rows: string[] = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let i = 0; i < csvText.length; i++) {
+      const c = csvText[i];
+      if (c === '"') {
+        if (inQuotes && csvText[i + 1] === '"') { cur += '""'; i++; }
+        else { inQuotes = !inQuotes; cur += c; }
+      } else if ((c === '\n' || c === '\r') && !inQuotes) {
+        if (cur.length) { rows.push(cur); cur = ''; }
+        if (c === '\r' && csvText[i + 1] === '\n') i++;
+      } else {
+        cur += c;
+      }
+    }
+    if (cur.length) rows.push(cur);
+
     const sessions: Session[] = [];
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line || line.startsWith('Date,Time,Instructor,Session,Location')) continue;
-      
-      const [date, time, instructor, session, location] = line.split(',').map(field => field.trim());
-      
-      console.log(`Line ${i}: date="${date}", time="${time}", instructor="${instructor}", session="${session}"`);
-      
+    for (const line of rows) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const fields = parseCSVLine(trimmed);
+      const [date, time, instructor, session, location, extra] = fields;
+      if (!date || date.toLowerCase() === 'date') continue;
       if (date && time && (instructor || session)) {
-        // Handle different date formats
         let parsedDate = date;
         if (date.includes('.')) {
-          // Handle DD.MM.YYYY format
           const [day, month, year] = date.split('.');
           parsedDate = `${month}/${day}/${year}`;
-          console.log(`Converted date from "${date}" to "${parsedDate}"`);
         }
-        
         sessions.push({
           date: parsedDate,
           time,
           instructor: instructor || '',
           session: session || '',
-          location: location || ''
+          location: location || '',
+          extra: (extra || '').trim() || undefined,
         });
       }
     }
-    
-    console.log('Final parsed sessions:', sessions);
     return sessions;
   };
 
