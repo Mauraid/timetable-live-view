@@ -304,12 +304,9 @@ export const TimetableApp = () => {
           <TabsContent value="icp" className="space-y-6">
             <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-primary flex items-center gap-2">
+              <CardTitle className="text-2xl text-primary flex items-center gap-2">
                   <Badge className="bg-primary text-primary-foreground text-lg px-4 py-1">ICP</Badge>
                 </CardTitle>
-                <CardDescription>
-                  (Dec 10-13, 2025)
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <DateDropdown 
@@ -332,9 +329,6 @@ export const TimetableApp = () => {
                 <CardTitle className="text-2xl text-secondary flex items-center gap-2">
                   <Badge variant="secondary" className="text-lg px-4 py-1">SkateCamp BCN</Badge>
                 </CardTitle>
-                <CardDescription>
-                  (Dec 10-13, 2025)
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <DateDropdown 
