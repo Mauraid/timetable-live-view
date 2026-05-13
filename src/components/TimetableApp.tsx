@@ -15,6 +15,7 @@ interface Session {
   session: string;
   location: string;
   extra?: string;
+  mapEmbed?: string;
 }
 
 const CSV_URLS = {
@@ -87,7 +88,7 @@ export const TimetableApp = () => {
       const trimmed = line.trim();
       if (!trimmed) continue;
       const fields = parseCSVLine(trimmed);
-      const [date, time, instructor, session, location, extra] = fields;
+      const [date, time, instructor, session, location, extra, mapEmbed] = fields;
       if (!date || date.toLowerCase() === 'date') continue;
       if (date && time && (instructor || session)) {
         let parsedDate = date;
@@ -102,6 +103,7 @@ export const TimetableApp = () => {
           session: session || '',
           location: location || '',
           extra: (extra || '').trim() || undefined,
+          mapEmbed: (mapEmbed || '').trim() || undefined,
         });
       }
     }

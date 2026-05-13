@@ -12,6 +12,7 @@ interface Session {
   session: string;
   location: string;
   extra?: string;
+  mapEmbed?: string;
 }
 
 interface TimetableGridProps {
@@ -164,6 +165,13 @@ export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGrid
                       ) : (
                         <p className="text-sm text-muted-foreground whitespace-pre-line">{session.extra}</p>
                       )
+                    )}
+
+                    {session.mapEmbed && (
+                      <div
+                        className="w-full overflow-hidden rounded-md [&_iframe]:w-full [&_iframe]:h-48 [&_iframe]:border-0"
+                        dangerouslySetInnerHTML={{ __html: session.mapEmbed }}
+                      />
                     )}
 
                     {session.location && (
