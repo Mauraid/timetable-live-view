@@ -32,13 +32,11 @@ export const TimetableApp = () => {
     main: Session[];
     icp: Session[];
     path1: Session[];
-    path2: Session[];
-  }>({ main: [], icp: [], path1: [], path2: [] });
+  }>({ main: [], icp: [], path1: [] });
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [selectedDateIcp, setSelectedDateIcp] = useState<string | null>(null);
   const [selectedDatePath1, setSelectedDatePath1] = useState<string | null>(null);
-  const [selectedDatePath2, setSelectedDatePath2] = useState<string | null>(null);
   const { toast } = useToast();
 
   console.log('Current loading state:', loading);
