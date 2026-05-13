@@ -12,6 +12,7 @@ interface Session {
   session: string;
   location: string;
   extra?: string;
+  mapEmbed?: string;
 }
 
 interface TimetableGridProps {
