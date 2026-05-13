@@ -167,6 +167,13 @@ export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGrid
                       )
                     )}
 
+                    {session.mapEmbed && (
+                      <div
+                        className="w-full overflow-hidden rounded-md [&_iframe]:w-full [&_iframe]:h-48 [&_iframe]:border-0"
+                        dangerouslySetInnerHTML={{ __html: session.mapEmbed }}
+                      />
+                    )}
+
                     {session.location && (
                       <button
                         onClick={() => setSelectedLocation(session.location)}
