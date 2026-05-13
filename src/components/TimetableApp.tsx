@@ -113,39 +113,34 @@ export const TimetableApp = () => {
     try {
       console.log('Fetching data from URLs:', CSV_URLS);
       
-      const [mainResponse, icpResponse, path1Response, path2Response] = await Promise.all([
+      const [mainResponse, icpResponse, path1Response] = await Promise.all([
         fetch(`${CSV_URLS.main}&timestamp=${Date.now()}`),
         fetch(`${CSV_URLS.icp}&timestamp=${Date.now()}`),
-        fetch(`${CSV_URLS.path1}&timestamp=${Date.now()}`),
-        fetch(`${CSV_URLS.path2}&timestamp=${Date.now()}`)
+        fetch(`${CSV_URLS.path1}&timestamp=${Date.now()}`)
       ]);
 
       console.log('Response statuses:', {
         main: mainResponse.status,
         icp: icpResponse.status,
-        path1: path1Response.status,
-        path2: path2Response.status
+        path1: path1Response.status
       });
 
-      const [mainCSV, icpCSV, path1CSV, path2CSV] = await Promise.all([
+      const [mainCSV, icpCSV, path1CSV] = await Promise.all([
         mainResponse.text(),
         icpResponse.text(),
-        path1Response.text(),
-        path2Response.text()
+        path1Response.text()
       ]);
 
       console.log('Raw CSV data:', {
         main: mainCSV.substring(0, 200),
         icp: icpCSV.substring(0, 200),
-        path1: path1CSV.substring(0, 200),
-        path2: path2CSV.substring(0, 200)
+        path1: path1CSV.substring(0, 200)
       });
 
       const parsedSessions = {
         main: parseCSV(mainCSV),
         icp: parseCSV(icpCSV),
-        path1: parseCSV(path1CSV),
-        path2: parseCSV(path2CSV)
+        path1: parseCSV(path1CSV)
       };
 
       console.log('Parsed sessions:', parsedSessions);
@@ -222,7 +217,7 @@ export const TimetableApp = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="introduction" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 max-w-lg mx-auto mb-8 bg-card shadow-soft">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto mb-8 bg-card shadow-soft">
             <TabsTrigger value="introduction" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
               Intro
             </TabsTrigger>
@@ -231,9 +226,6 @@ export const TimetableApp = () => {
             </TabsTrigger>
             <TabsTrigger value="path1" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
               SkateCamp BCN
-            </TabsTrigger>
-            <TabsTrigger value="path2" className="data-[state=active]:bg-gradient-primary data-[state=active]:text-white">
-              Kids path
             </TabsTrigger>
           </TabsList>
 
@@ -354,31 +346,6 @@ export const TimetableApp = () => {
                   sessions={sessions.path1} 
                   loading={loading}
                   selectedDate={selectedDatePath1}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="path2" className="space-y-6">
-            <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl text-accent flex items-center gap-2">
-                  <Badge className="bg-accent text-accent-foreground text-lg px-4 py-1">Kids path</Badge>
-                </CardTitle>
-                <CardDescription>
-                  (Dec 10-13, 2025)
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DateDropdown 
-                  sessions={sessions.path2} 
-                  selectedDate={selectedDatePath2}
-                  onDateSelect={setSelectedDatePath2}
-                />
-                <TimetableGrid 
-                  sessions={sessions.path2} 
-                  loading={loading}
-                  selectedDate={selectedDatePath2}
                 />
               </CardContent>
             </Card>
