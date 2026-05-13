@@ -329,9 +329,6 @@ export const TimetableApp = () => {
                 <CardTitle className="text-2xl text-secondary flex items-center gap-2">
                   <Badge variant="secondary" className="text-lg px-4 py-1">SkateCamp BCN</Badge>
                 </CardTitle>
-                <CardDescription>
-                  (Dec 10-13, 2025)
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <DateDropdown 
