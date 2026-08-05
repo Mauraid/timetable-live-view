@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Download, RefreshCw } from 'lucide-react';
+import { Download, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { TimetableGrid } from './TimetableGrid';
 import { DateDropdown } from './DateDropdown';
@@ -167,9 +167,11 @@ export const TimetableApp = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-primary mb-4 shadow-medium">
-            <Calendar className="w-10 h-10 text-white" />
-          </div>
+          <img
+            src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
+            alt="Skate Camp World logo"
+            className="inline-block w-24 h-24 rounded-full object-contain mb-4 shadow-medium"
+          />
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
             Skate Camp World
           </h1>
