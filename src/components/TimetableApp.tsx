@@ -228,12 +228,31 @@ export const TimetableApp = () => {
                 </CardHeader>
                 <CardContent>
                   {sheet.kind === 'text' ? (
-                    <div className="space-y-3">
-                      {introLines.map((line, i) => (
-                        <p key={i} className="text-lg text-foreground whitespace-pre-line">
-                          {line}
-                        </p>
-                      ))}
+                    <div className="space-y-6">
+                      <video
+                        src="https://skatecampworld.com/hubfs/BCN%20and%20LOZ%20drone.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        controls
+                        className="w-full rounded-lg shadow-medium"
+                      />
+                      <div className="space-y-3">
+                        {introLines.map((line, i) => (
+                          <p key={i} className="text-lg text-foreground whitespace-pre-line">
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                      <a
+                        href="https://skatecampworld.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block text-primary underline underline-offset-4 hover:opacity-80"
+                      >
+                        Visit skatecampworld.com
+                      </a>
                     </div>
                   ) : (
                     <>
