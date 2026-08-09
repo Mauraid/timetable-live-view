@@ -43,19 +43,25 @@
     --input: 0 0% 95%;
     --ring: 190 70% 44%;
 
+    /* Surfaces */
+    --ink: 205 45% 12%;
+    --ink-foreground: 0 0% 98%;
+    --surface: 200 30% 97%;
+
     /* Enhanced Design System */
     --gradient-primary: linear-gradient(135deg, hsl(var(--brand-blue)), hsl(var(--brand-green)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--brand-orange)), hsl(var(--brand-blue)));
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(0 0% 97%));
-    
-    --shadow-soft: 0 4px 20px -2px hsl(var(--brand-blue) / 0.1);
-    --shadow-medium: 0 8px 30px -4px hsl(var(--brand-blue) / 0.2);
-    --shadow-strong: 0 20px 40px -8px hsl(var(--brand-blue) / 0.3);
+    --gradient-ink: linear-gradient(160deg, hsl(205 55% 16%), hsl(198 60% 22%));
+
+    --shadow-soft: 0 2px 10px -2px hsl(var(--ink) / 0.08);
+    --shadow-medium: 0 10px 30px -12px hsl(var(--ink) / 0.22);
+    --shadow-strong: 0 24px 50px -18px hsl(var(--ink) / 0.35);
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -129,7 +135,11 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(0 0% 98%) 100%);
+    background: hsl(var(--surface));
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
   }
 
   html {
@@ -148,6 +158,10 @@
   
   .gradient-subtle {
     background: var(--gradient-subtle);
+  }
+
+  .gradient-ink {
+    background: var(--gradient-ink);
   }
   
   .shadow-soft {
@@ -169,4 +183,17 @@
   .transition-bounce {
     transition: var(--transition-bounce);
   }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
