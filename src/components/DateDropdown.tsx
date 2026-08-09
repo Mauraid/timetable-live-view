@@ -67,13 +67,13 @@ export const DateDropdown = ({ sessions, selectedDate, onDateSelect }: DateDropd
   }
 
   return (
-    <div className="flex items-center gap-3 mb-6">
-      <Calendar className="w-5 h-5 text-primary" />
+    <div className="flex items-center gap-3">
+      <Calendar className="w-5 h-5 text-primary shrink-0" aria-hidden="true" />
       <Select value={selectedDate || 'all'} onValueChange={(value) => onDateSelect(value === 'all' ? null : value)}>
-        <SelectTrigger className="w-[300px] bg-background border shadow-soft">
+        <SelectTrigger className="flex-1 rounded-2xl bg-card border-border shadow-soft font-medium">
           <SelectValue placeholder="Select a date" />
         </SelectTrigger>
-        <SelectContent className="bg-background border shadow-lg z-50">
+        <SelectContent className="bg-popover border-border shadow-lg z-50 rounded-2xl">
           <SelectItem value="all" className="hover:bg-accent">
             All Dates
           </SelectItem>
