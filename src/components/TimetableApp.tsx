@@ -1,27 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Download, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { TimetableGrid } from './TimetableGrid';
 import { DateDropdown } from './DateDropdown';
-
-interface Session {
-  date: string;
-  time: string;
-  instructor: string;
-  session: string;
-  location: string;
-  extra?: string;
-  mapEmbed?: string;
-}
+import { NowNext } from './NowNext';
+import { StatusStrip } from './StatusStrip';
+import { useOnlineStatus } from '@/hooks/use-online-status';
+import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
+import { ExternalLink } from 'lucide-react';
 
 const CSV_BASE =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub';
 
 const sheetUrl = (gid: string) => `${CSV_BASE}?gid=${gid}&single=true&output=csv`;
+
+const CACHE_KEY = 'scw-timetable-cache-v1';
 
 // Tabs mirror the sheet tabs of the Google Sheet
 const SHEETS = [
@@ -37,7 +30,12 @@ export const TimetableApp = () => {
   const [introLines, setIntroLines] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [offlineReady, setOfflineReady] = useState(false);
+  const [activeTab, setActiveTab] = useState(SHEETS[0].id);
   const [selectedDates, setSelectedDates] = useState<Record<string, string | null>>({});
+  const [now, setNow] = useState(new Date());
+  const scheduleRef = useRef<HTMLDivElement>(null);
+  const online = useOnlineStatus();
   const { toast } = useToast();
 
   const parseCSVLine = (line: string): string[] => {
@@ -81,7 +79,7 @@ export const TimetableApp = () => {
   };
 
   const parseCSV = (csvText: string): Session[] => {
-    const sessions: Session[] = [];
+    const parsed: Session[] = [];
     for (const line of splitRows(csvText)) {
       const trimmed = line.trim();
       if (!trimmed) continue;
@@ -94,7 +92,7 @@ export const TimetableApp = () => {
           const [day, month, year] = date.split('.');
           parsedDate = `${month}/${day}/${year}`;
         }
-        sessions.push({
+        parsed.push({
           date: parsedDate,
           time,
           instructor: instructor || '',
@@ -105,7 +103,7 @@ export const TimetableApp = () => {
         });
       }
     }
-    return sessions;
+    return parsed;
   };
 
   const parseTextSheet = (csvText: string): string[] =>
@@ -114,7 +112,45 @@ export const TimetableApp = () => {
       .map((cell) => cell.trim())
       .filter(Boolean);
 
-  const fetchTimetableData = async () => {
+  // Load cached copy first so the app is usable offline / instantly
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const cached = JSON.parse(raw) as {
+          sessions: Record<string, Session[]>;
+          introLines: string[];
+          lastUpdated: string;
+        };
+        setSessions(cached.sessions || {});
+        setIntroLines(cached.introLines || []);
+        setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
+        setOfflineReady(true);
+      }
+    } catch {
+      /* ignore corrupt cache */
+    }
+    fetchTimetableData(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  const fetchTimetableData = async (silent = false) => {
+    if (!navigator.onLine) {
+      if (!silent) {
+        toast({
+          title: "You're offline",
+          description: 'Showing the last saved version of the schedule.',
+        });
+      }
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       const ts = Date.now();
@@ -124,25 +160,40 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
+      let nextIntro: string[] = [];
       SHEETS.forEach((sheet, i) => {
         const text = texts[i];
         if (sheet.kind === 'text') {
-          setIntroLines(parseTextSheet(text));
+          nextIntro = parseTextSheet(text);
         } else {
           nextSessions[sheet.id] = parseCSV(text);
         }
       });
+      const updatedAt = new Date();
       setSessions(nextSessions);
-      setLastUpdated(new Date());
-      toast({
-        title: 'Timetable Updated',
-        description: 'Latest schedule data has been loaded successfully.',
-      });
+      setIntroLines(nextIntro);
+      setLastUpdated(updatedAt);
+
+      try {
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
+        );
+        setOfflineReady(true);
+      } catch {
+        /* storage full or unavailable */
+      }
+
+      if (!silent) {
+        toast({ title: 'Schedule updated ✓', description: 'You have the latest sessions.' });
+      }
     } catch (error) {
       console.error('Error fetching timetable data:', error);
       toast({
-        title: 'Update Failed',
-        description: 'Could not fetch latest schedule data. Please try again.',
+        title: 'Could not refresh',
+        description: offlineReady
+          ? 'Showing the last saved version of the schedule.'
+          : 'Please check your connection and try again.',
         variant: 'destructive',
       });
     } finally {
@@ -150,132 +201,138 @@ export const TimetableApp = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTimetableData();
-  }, []);
+  const allSessions: SessionWithSource[] = useMemo(
+    () =>
+      SHEETS.filter((s) => s.kind === 'timetable').flatMap((sheet) =>
+        (sessions[sheet.id] || []).map((s) => ({ ...s, sourceId: sheet.id, sourceName: sheet.name }))
+      ),
+    [sessions]
+  );
 
-  const installPWA = () => {
-    toast({
-      title: 'Install App',
-      description:
-        "Look for the install button in your browser or use 'Add to Home Screen' from your browser menu.",
-    });
+  const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
+
+  const openToday = (sourceId: string, date: string) => {
+    setActiveTab(sourceId);
+    setSelectedDates((prev) => ({ ...prev, [sourceId]: date }));
+    requestAnimationFrame(() =>
+      scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    );
   };
 
+  const todayLabel = now.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <img
-            src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
-            alt="Skate Camp World logo"
-            className="inline-block w-24 h-24 rounded-full object-contain mb-4 shadow-medium"
-          />
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-            Skate Camp World
-          </h1>
-
-          <div className="flex flex-wrap justify-center gap-4 mt-6">
-            <Button
-              onClick={fetchTimetableData}
-              disabled={loading}
-              variant="outline"
-              className="shadow-soft hover:shadow-medium transition-bounce"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Schedule
-            </Button>
-            <Button
-              onClick={installPWA}
-              className="bg-gradient-primary hover:opacity-90 shadow-soft hover:shadow-medium transition-bounce"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Install App
-            </Button>
+    <div className="min-h-screen bg-surface">
+      {/* Header */}
+      <header className="bg-gradient-ink text-ink-foreground">
+        <div className="mx-auto w-full max-w-3xl px-5 pt-8 pb-10">
+          <div className="flex items-center gap-3 mb-6">
+            <img
+              src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
+              alt="Skate Camp World logo"
+              className="w-12 h-12 rounded-full object-contain bg-ink-foreground/10"
+            />
+            <div>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight leading-none">
+                Skate Camp World
+              </h1>
+              <p className="text-sm text-ink-foreground/70 mt-1">
+                Your camp. Your schedule. Your skate.
+              </p>
+            </div>
           </div>
-
-          {lastUpdated && (
-            <p className="text-sm text-muted-foreground mt-4">
-              Last updated: {lastUpdated.toLocaleString()}
-            </p>
-          )}
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-foreground/60">
+            {todayLabel}
+          </p>
         </div>
+      </header>
 
-        {/* Main Content */}
-        <Tabs defaultValue={SHEETS[0].id} className="w-full">
-          <TabsList className="flex flex-wrap h-auto w-full max-w-3xl mx-auto mb-8 bg-card shadow-soft">
+      <main className="mx-auto w-full max-w-3xl px-5 -mt-6 pb-16 space-y-8">
+        <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
+
+        <StatusStrip
+          online={online}
+          offlineReady={offlineReady}
+          lastUpdated={lastUpdated}
+          loading={loading}
+          onRefresh={() => fetchTimetableData(false)}
+        />
+
+        {/* Schedule */}
+        <div ref={scheduleRef} className="scroll-mt-4 space-y-5">
+          <h2 className="text-xl font-bold">Programmes</h2>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="-mx-5 px-5 overflow-x-auto no-scrollbar">
+              <TabsList className="inline-flex h-auto w-max gap-1 rounded-full bg-card p-1 shadow-soft border border-border">
+                {SHEETS.map((sheet) => (
+                  <TabsTrigger
+                    key={sheet.id}
+                    value={sheet.id}
+                    className="rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  >
+                    {sheet.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+
             {SHEETS.map((sheet) => (
-              <TabsTrigger
-                key={sheet.id}
-                value={sheet.id}
-                className="flex-1 min-w-[7rem] data-[state=active]:bg-gradient-primary data-[state=active]:text-white"
-              >
-                {sheet.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {SHEETS.map((sheet) => (
-            <TabsContent key={sheet.id} value={sheet.id} className="space-y-6">
-              <Card className="shadow-medium border-0 bg-card/80 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-primary flex items-center gap-2">
-                    <Badge className="bg-primary text-primary-foreground text-lg px-4 py-1">
-                      {sheet.name}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {sheet.kind === 'text' ? (
-                    <div className="space-y-6">
-                      <video
-                        src="https://skatecampworld.com/hubfs/BCN%20and%20LOZ%20drone.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        controls
-                        className="w-full rounded-lg shadow-medium"
-                      />
-                      <div className="space-y-3">
-                        {introLines.map((line, i) => (
-                          <p key={i} className="text-lg text-foreground whitespace-pre-line">
-                            {line}
-                          </p>
-                        ))}
-                      </div>
+              <TabsContent key={sheet.id} value={sheet.id} className="mt-5 space-y-5">
+                {sheet.kind === 'text' ? (
+                  <div className="space-y-5">
+                    <video
+                      src="https://skatecampworld.com/hubfs/BCN%20and%20LOZ%20drone.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      controls
+                      className="w-full rounded-3xl shadow-medium"
+                    />
+                    <div className="rounded-3xl bg-card border border-border p-5 shadow-soft space-y-3">
+                      {introLines.map((line, i) => (
+                        <p key={i} className="text-base text-foreground leading-relaxed whitespace-pre-line">
+                          {line}
+                        </p>
+                      ))}
                       <a
                         href="https://skatecampworld.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-block text-primary underline underline-offset-4 hover:opacity-80"
+                        className="inline-flex items-center gap-1.5 pt-1 font-semibold text-primary hover:underline underline-offset-4"
                       >
                         Visit skatecampworld.com
+                        <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
-                  ) : (
-                    <>
-                      <DateDropdown
-                        sessions={sessions[sheet.id] || []}
-                        selectedDate={selectedDates[sheet.id] ?? null}
-                        onDateSelect={(date) =>
-                          setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }))
-                        }
-                      />
-                      <TimetableGrid
-                        sessions={sessions[sheet.id] || []}
-                        loading={loading}
-                        selectedDate={selectedDates[sheet.id] ?? null}
-                      />
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
-      </div>
+                  </div>
+                ) : (
+                  <>
+                    <DateDropdown
+                      sessions={sessions[sheet.id] || []}
+                      selectedDate={selectedDates[sheet.id] ?? null}
+                      onDateSelect={(date) =>
+                        setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }))
+                      }
+                    />
+                    <TimetableGrid
+                      sessions={sessions[sheet.id] || []}
+                      loading={loading && !(sessions[sheet.id] || []).length}
+                      selectedDate={selectedDates[sheet.id] ?? null}
+                    />
+                  </>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </main>
     </div>
   );
 };
