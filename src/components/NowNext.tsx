@@ -48,7 +48,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
           <p className="text-ink-foreground/70">Loading schedule…</p>
         ) : primary ? (
           <>
-            <h2 className="text-2xl font-bold leading-tight mb-1">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold leading-tight mb-1 tracking-tight">
               {primary.session.session || 'Session'}
             </h2>
             <p className="text-sm text-ink-foreground/70 mb-4">
