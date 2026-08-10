@@ -40,7 +40,9 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
             {isLive ? 'Happening now' : 'Next session'}
           </span>
           {primary && (
-            <span className="text-xs text-ink-foreground/70 font-medium">{primary.session.sourceName}</span>
+            <span className="text-lg font-display font-bold text-ink-foreground uppercase tracking-wide">
+              {primary.session.sourceName}
+            </span>
           )}
         </div>
 
@@ -48,7 +50,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
           <p className="text-ink-foreground/70">Loading schedule…</p>
         ) : primary ? (
           <>
-            <h2 className="text-3xl sm:text-4xl font-display font-bold leading-tight mb-1 tracking-tight">
+            <h2 className="text-2xl font-bold leading-tight mb-1">
               {primary.session.session || 'Session'}
             </h2>
             <p className="text-sm text-ink-foreground/70 mb-4">
