@@ -81,7 +81,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
             </span>
             <span className="text-xs text-muted-foreground font-medium">{next.session.sourceName}</span>
           </div>
-          <h3 className="text-lg font-bold leading-tight mb-1">{next.session.session || 'Session'}</h3>
+          <h3 className="text-2xl font-display font-bold leading-tight mb-1 tracking-tight">{next.session.session || 'Session'}</h3>
           <p className="text-sm text-muted-foreground mb-3">
             {formatDateShort(next.session.date)} · {formatRelative(next.range.start)}
           </p>
