@@ -48,7 +48,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
           <p className="text-ink-foreground/70">Loading schedule…</p>
         ) : primary ? (
           <>
-            <h2 className="text-2xl font-bold leading-tight mb-1">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold leading-tight mb-1 tracking-tight">
               {primary.session.session || 'Session'}
             </h2>
             <p className="text-sm text-ink-foreground/70 mb-4">
@@ -81,7 +81,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
             </span>
             <span className="text-xs text-muted-foreground font-medium">{next.session.sourceName}</span>
           </div>
-          <h3 className="text-lg font-bold leading-tight mb-1">{next.session.session || 'Session'}</h3>
+          <h3 className="text-2xl font-display font-bold leading-tight mb-1 tracking-tight">{next.session.session || 'Session'}</h3>
           <p className="text-sm text-muted-foreground mb-3">
             {formatDateShort(next.session.date)} · {formatRelative(next.range.start)}
           </p>
