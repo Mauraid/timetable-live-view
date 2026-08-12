@@ -232,11 +232,21 @@ export const TimetableApp = () => {
       <header className="bg-gradient-ink text-ink-foreground">
         <div className="mx-auto w-full max-w-3xl px-5 pt-8 pb-10">
           <div className="flex items-center gap-3 mb-6">
-            <img
-              src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
-              alt="Skate Camp World logo"
-              className="w-12 h-12 rounded-full object-contain bg-ink-foreground/10"
-            />
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('intro');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              aria-label="Go to Intro page"
+              className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ink transition-transform hover:scale-105"
+            >
+              <img
+                src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
+                alt="Skate Camp World logo"
+                className="w-12 h-12 rounded-full object-contain bg-ink-foreground/10"
+              />
+            </button>
             <div>
               <h1 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-tight leading-none">
                 Skate Camp World
