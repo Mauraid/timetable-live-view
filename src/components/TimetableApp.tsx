@@ -333,6 +333,15 @@ export const TimetableApp = () => {
           </Tabs>
         </div>
       </main>
+
+      <footer className="border-t border-border bg-card py-6">
+        <div className="mx-auto w-full max-w-3xl px-5 text-center text-sm text-muted-foreground">
+          <p>
+            © {new Date().getFullYear()} Skate Camp World. Inline Certification Program under Skate Camp World. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };
+
