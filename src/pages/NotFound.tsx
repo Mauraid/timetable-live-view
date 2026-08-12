@@ -21,7 +21,7 @@ const NotFound = () => {
         </a>
       </div>
       <footer className="w-full py-6 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} Skate Camp World. Inline Certification Program under Skate Camp World. All rights reserved.
+        © {new Date().getFullYear()} Inline Certification Program. All rights reserved.
       </footer>
     </div>
   );
