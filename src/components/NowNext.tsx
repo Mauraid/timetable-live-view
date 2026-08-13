@@ -67,7 +67,7 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
           <>
             <h2 className="text-2xl font-bold leading-tight mb-1">No sessions scheduled</h2>
             <p className="text-sm text-ink-foreground/70">
-              Browse the full timetable below for all camp programmes.
+              Browse the full timetable below.
             </p>
           </>
         )}
