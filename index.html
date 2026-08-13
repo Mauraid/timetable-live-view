@@ -32,21 +32,36 @@
 
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('SW registration failed: ', registrationError);
+        const isDevelopmentPreview =
+          location.hostname === 'localhost' || location.hostname.endsWith('.lovableproject.com');
+
+        if (isDevelopmentPreview) {
+          // A service worker must not cache Vite's generated dependency modules.
+          // Clear any worker/cache left by an earlier preview before React loads.
+          Promise.all([
+            navigator.serviceWorker.getRegistrations().then((registrations) =>
+              Promise.all(registrations.map((registration) => registration.unregister()))
+            ),
+            'caches' in window
+              ? caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+              : Promise.resolve(),
+          ]).then(() => {
+            if (navigator.serviceWorker.controller && !sessionStorage.getItem('sw-preview-cleaned')) {
+              sessionStorage.setItem('sw-preview-cleaned', 'true');
+              location.reload();
+            }
+          });
+        } else {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch((registrationError) => {
+              console.warn('Service worker registration failed:', registrationError);
             });
-        });
+          });
+        }
       }
     </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
