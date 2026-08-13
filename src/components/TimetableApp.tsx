@@ -262,22 +262,11 @@ export const TimetableApp = () => {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-5 -mt-6 pb-16 space-y-8">
-        <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
-
-        <StatusStrip
-          online={online}
-          offlineReady={offlineReady}
-          lastUpdated={lastUpdated}
-          loading={loading}
-          onRefresh={() => fetchTimetableData(false)}
-        />
-
-        {/* Schedule */}
-        <div ref={scheduleRef} className="scroll-mt-4 space-y-5">
-          <h2 className="text-xl font-bold">Programmes</h2>
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <main className="mx-auto w-full max-w-3xl px-5 -mt-6 pb-16">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-8">
+          {/* Programmes */}
+          <div className="space-y-5">
+            <h2 className="text-xl font-bold">Programmes</h2>
             <div className="-mx-5 px-5 overflow-x-auto no-scrollbar">
               <TabsList className="inline-flex h-auto w-max gap-1 rounded-full bg-card p-1 shadow-soft border border-border">
                 {SHEETS.map((sheet) => (
@@ -291,7 +280,20 @@ export const TimetableApp = () => {
                 ))}
               </TabsList>
             </div>
+          </div>
 
+          <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
+
+          <StatusStrip
+            online={online}
+            offlineReady={offlineReady}
+            lastUpdated={lastUpdated}
+            loading={loading}
+            onRefresh={() => fetchTimetableData(false)}
+          />
+
+          {/* Schedule */}
+          <div ref={scheduleRef} className="scroll-mt-4 space-y-5">
             {SHEETS.map((sheet) => (
               <TabsContent key={sheet.id} value={sheet.id} className="mt-5 space-y-5">
                 {sheet.kind === 'text' ? (
@@ -340,8 +342,8 @@ export const TimetableApp = () => {
                 )}
               </TabsContent>
             ))}
-          </Tabs>
-        </div>
+          </div>
+        </Tabs>
       </main>
 
       <footer className="border-t border-border bg-card py-6">
