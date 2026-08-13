@@ -280,7 +280,9 @@ export const TimetableApp = () => {
             </div>
           </div>
 
-          <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
+          {activeTab === 'intro' && (
+            <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
+          )}
 
           <StatusStrip
             online={online}
