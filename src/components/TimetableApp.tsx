@@ -264,9 +264,7 @@ export const TimetableApp = () => {
 
       <main className="mx-auto w-full max-w-3xl px-5 -mt-6 pb-16">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-8">
-          {/* Programmes */}
           <div className="space-y-5">
-            <h2 className="text-xl font-bold">Programmes</h2>
             <div className="-mx-5 px-5 overflow-x-auto no-scrollbar">
               <TabsList className="inline-flex h-auto w-max gap-1 rounded-full bg-card p-1 shadow-soft border border-border">
                 {SHEETS.map((sheet) => (
