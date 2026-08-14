@@ -331,14 +331,16 @@ export const TimetableApp = () => {
                     <DateDropdown
                       sessions={sessions[sheet.id] || []}
                       selectedDate={selectedDates[sheet.id] ?? null}
-                      onDateSelect={(date) =>
-                        setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }))
-                      }
+                      onDateSelect={(date) => {
+                        setHighlightKey(null);
+                        setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }));
+                      }}
                     />
                     <TimetableGrid
                       sessions={sessions[sheet.id] || []}
                       loading={loading && !(sessions[sheet.id] || []).length}
                       selectedDate={selectedDates[sheet.id] ?? null}
+                      highlightKey={activeTab === sheet.id ? highlightKey : null}
                     />
                   </>
                 )}
