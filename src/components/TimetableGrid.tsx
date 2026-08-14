@@ -146,7 +146,7 @@ export const TimetableGrid = ({ sessions, loading, selectedDate, highlightKey }:
                   )}
                 </div>
               </article>
-            ))}
+            );})}
           </div>
         </section>
       ))}
