@@ -33,6 +33,7 @@ export const TimetableApp = () => {
   const [offlineReady, setOfflineReady] = useState(false);
   const [activeTab, setActiveTab] = useState(SHEETS[0].id);
   const [selectedDates, setSelectedDates] = useState<Record<string, string | null>>({});
+  const [highlightKey, setHighlightKey] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
   const scheduleRef = useRef<HTMLDivElement>(null);
   const online = useOnlineStatus();
@@ -211,9 +212,10 @@ export const TimetableApp = () => {
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
-  const openToday = (sourceId: string, date: string) => {
+  const openToday = (sourceId: string, date: string, key?: string) => {
     setActiveTab(sourceId);
     setSelectedDates((prev) => ({ ...prev, [sourceId]: date }));
+    setHighlightKey(key ?? null);
     requestAnimationFrame(() =>
       scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     );
@@ -329,14 +331,16 @@ export const TimetableApp = () => {
                     <DateDropdown
                       sessions={sessions[sheet.id] || []}
                       selectedDate={selectedDates[sheet.id] ?? null}
-                      onDateSelect={(date) =>
-                        setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }))
-                      }
+                      onDateSelect={(date) => {
+                        setHighlightKey(null);
+                        setSelectedDates((prev) => ({ ...prev, [sheet.id]: date }));
+                      }}
                     />
                     <TimetableGrid
                       sessions={sessions[sheet.id] || []}
                       loading={loading && !(sessions[sheet.id] || []).length}
                       selectedDate={selectedDates[sheet.id] ?? null}
+                      highlightKey={activeTab === sheet.id ? highlightKey : null}
                     />
                   </>
                 )}
