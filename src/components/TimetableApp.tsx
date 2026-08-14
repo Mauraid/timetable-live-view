@@ -211,9 +211,10 @@ export const TimetableApp = () => {
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
-  const openToday = (sourceId: string, date: string) => {
+  const openToday = (sourceId: string, date: string, key?: string) => {
     setActiveTab(sourceId);
     setSelectedDates((prev) => ({ ...prev, [sourceId]: date }));
+    setHighlightKey(key ?? null);
     requestAnimationFrame(() =>
       scheduleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     );
