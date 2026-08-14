@@ -33,6 +33,7 @@ export const TimetableApp = () => {
   const [offlineReady, setOfflineReady] = useState(false);
   const [activeTab, setActiveTab] = useState(SHEETS[0].id);
   const [selectedDates, setSelectedDates] = useState<Record<string, string | null>>({});
+  const [highlightKey, setHighlightKey] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
   const scheduleRef = useRef<HTMLDivElement>(null);
   const online = useOnlineStatus();
