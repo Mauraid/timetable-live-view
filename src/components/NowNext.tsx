@@ -1,12 +1,13 @@
 import { Clock, MapPin, User, ArrowRight, Radio, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDateShort, formatRelative, type SessionWithSource } from '@/lib/session-utils';
+import { sessionKey } from './TimetableGrid';
 
 interface NowNextProps {
   current: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
   next: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
   loading: boolean;
-  onOpenToday: (sourceId: string, date: string) => void;
+  onOpenToday: (sourceId: string, date: string, key?: string) => void;
 }
 
 const Detail = ({ icon: Icon, text, muted }: { icon: typeof Clock; text: string; muted?: boolean }) => (
@@ -23,8 +24,9 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
   const target = primary?.session;
   const jump = () => {
     if (!target) return;
-    onOpenToday(target.sourceId, target.date);
+    onOpenToday(target.sourceId, target.date, sessionKey(target));
   };
+
 
   return (
     <section aria-label="Current and upcoming sessions" className="space-y-4">
