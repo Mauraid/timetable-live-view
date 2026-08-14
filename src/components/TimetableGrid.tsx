@@ -71,10 +71,15 @@ export const TimetableGrid = ({ sessions, loading, selectedDate, highlightKey }:
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
-            {dateSessions.map((session, index) => (
+            {dateSessions.map((session, index) => {
+              const isHighlighted = !!highlightKey && sessionKey(session) === highlightKey;
+              return (
               <article
                 key={`${date}-${index}`}
-                className="relative overflow-hidden rounded-3xl bg-card border border-border p-5 pl-6 shadow-soft hover:shadow-medium transition-smooth animate-fade-up"
+                ref={isHighlighted ? highlightRef : undefined}
+                className={`relative overflow-hidden rounded-3xl bg-card border p-5 pl-6 shadow-soft hover:shadow-medium transition-smooth animate-fade-up ${
+                  isHighlighted ? 'border-primary ring-2 ring-primary shadow-medium' : 'border-border'
+                }`}
               >
                 <span
                   className={`absolute left-0 top-0 h-full w-1.5 ${accentFor(session.session)}`}
