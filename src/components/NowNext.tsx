@@ -101,11 +101,11 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
         <article
           role="button"
           tabIndex={0}
-          onClick={() => onOpenToday(next.session.sourceId, next.session.date)}
+          onClick={() => onOpenToday(next.session.sourceId, next.session.date, sessionKey(next.session))}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
-              onOpenToday(next.session.sourceId, next.session.date);
+              onOpenToday(next.session.sourceId, next.session.date, sessionKey(next.session));
             }
           }}
           aria-label={`Open details for ${next.session.session || 'session'}`}
