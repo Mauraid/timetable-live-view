@@ -29,8 +29,29 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
   return (
     <section aria-label="Current and upcoming sessions" className="space-y-4">
       {/* Primary card */}
-      <article className="rounded-3xl bg-gradient-ink text-ink-foreground p-5 shadow-strong animate-fade-up">
+      <article
+        role={primary ? 'button' : undefined}
+        tabIndex={primary ? 0 : undefined}
+        onClick={primary ? jump : undefined}
+        onKeyDown={
+          primary
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  jump();
+                }
+              }
+            : undefined
+        }
+        aria-label={primary ? `Open details for ${primary.session.session || 'session'}` : undefined}
+        className={`rounded-3xl bg-gradient-ink text-ink-foreground p-5 shadow-strong animate-fade-up ${
+          primary
+            ? 'cursor-pointer transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+            : ''
+        }`}
+      >
         <div className="flex items-center gap-2 mb-3">
+
           <span
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
               isLive ? 'bg-accent text-accent-foreground' : 'bg-ink-foreground/15 text-ink-foreground'
