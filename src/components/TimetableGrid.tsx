@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, User, MapPin, CalendarDays, X } from 'lucide-react';
 import { Map } from './Map';
@@ -8,7 +8,11 @@ interface TimetableGridProps {
   sessions: Session[];
   loading: boolean;
   selectedDate?: string | null;
+  highlightKey?: string | null;
 }
+
+export const sessionKey = (s: Pick<Session, 'date' | 'time' | 'session'>) =>
+  `${s.date}|${s.time}|${s.session}`;
 
 const accentFor = (sessionName: string) => {
   const s = (sessionName || '').toLowerCase();
@@ -20,10 +24,20 @@ const accentFor = (sessionName: string) => {
   return 'bg-primary';
 };
 
-export const TimetableGrid = ({ sessions, loading, selectedDate }: TimetableGridProps) => {
+export const TimetableGrid = ({ sessions, loading, selectedDate, highlightKey }: TimetableGridProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const highlightRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!highlightKey) return;
+    const id = requestAnimationFrame(() =>
+      highlightRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    );
+    return () => cancelAnimationFrame(id);
+  }, [highlightKey, sessions, selectedDate]);
 
   const filteredSessions = selectedDate ? sessions.filter((s) => s.date === selectedDate) : sessions;
+
 
   if (loading) {
     return (
