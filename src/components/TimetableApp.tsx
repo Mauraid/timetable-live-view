@@ -161,14 +161,15 @@ export const TimetableApp = () => {
     setLoading(true);
     try {
       const ts = Date.now();
+      const dataSheets = SHEETS.filter((s) => s.kind !== 'photos');
       const responses = await Promise.all(
-        SHEETS.map((s) => fetch(`${sheetUrl(s.gid)}&timestamp=${ts}`))
+        dataSheets.map((s) => fetch(`${sheetUrl(s.gid)}&timestamp=${ts}`))
       );
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
       let nextIntro: string[] = [];
-      SHEETS.forEach((sheet, i) => {
+      dataSheets.forEach((sheet, i) => {
         const text = texts[i];
         if (sheet.kind === 'text') {
           nextIntro = parseTextSheet(text);
