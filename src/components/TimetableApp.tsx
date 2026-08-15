@@ -351,6 +351,43 @@ export const TimetableApp = () => {
                       </a>
                     </div>
                   </div>
+                ) : sheet.kind === 'photos' ? (
+                  <div className="space-y-5">
+                    <div className="rounded-3xl bg-card border border-border p-5 shadow-soft space-y-4">
+                      <h2 className="font-display text-2xl font-bold uppercase tracking-tight">
+                        Skate Camp Official photos
+                      </h2>
+                      <div className="flex flex-wrap gap-3">
+                        <a
+                          href={PHOTOS_FOLDER_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                        >
+                          View &amp; download photos
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={PHOTOS_FOLDER_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                        >
+                          Upload your photos
+                          <Upload className="w-4 h-4" />
+                        </a>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Photos by Ponio Photography. The folder opens in Google Drive, where you can
+                        download or add your own shots.
+                      </p>
+                    </div>
+                    <iframe
+                      src={PHOTOS_EMBED_URL}
+                      title="Skate Camp official photos folder"
+                      className="w-full h-[520px] rounded-3xl border border-border bg-card shadow-soft"
+                    />
+                  </div>
                 ) : (
                   <>
                     <DateDropdown
