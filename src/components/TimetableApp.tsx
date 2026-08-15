@@ -254,7 +254,7 @@ export const TimetableApp = () => {
               <img
                 src="/lovable-uploads/bb39984d-4845-4fca-a27e-0af6597ae41d.png"
                 alt="Skate Camp World logo"
-                className="w-12 h-12 rounded-full object-contain bg-ink-foreground/10"
+                className="w-12 h-12 rounded-full object-contain bg-white"
               />
             </button>
             <div>
