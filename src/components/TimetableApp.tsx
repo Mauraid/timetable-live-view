@@ -23,7 +23,13 @@ const SHEETS = [
   { id: 'loz', name: 'Skate Camp LOZ', gid: '1660538128', kind: 'timetable' as const },
   { id: 'bcn', name: 'Skate Camp BCN', gid: '727608527', kind: 'timetable' as const },
   { id: 'dc', name: 'SkateCamp DC', gid: '122183591', kind: 'timetable' as const },
+  { id: 'photos', name: 'Photos', gid: '', kind: 'photos' as const },
 ];
+
+const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
+const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDER_ID}`;
+const PHOTOS_EMBED_URL = `https://drive.google.com/embeddedfolderview?id=${PHOTOS_FOLDER_ID}#grid`;
+
 
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
