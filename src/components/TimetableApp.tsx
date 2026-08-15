@@ -264,7 +264,24 @@ export const TimetableApp = () => {
                 Your camp. Your schedule. Your skate.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('photos');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              aria-label="Go to Photos"
+              title="Photos by Ponio Photography"
+              className="ml-auto shrink-0 rounded-full bg-ink-foreground p-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ink transition-transform hover:scale-105"
+            >
+              <img
+                src={ponioLogo.url}
+                alt="Ponio Photography"
+                className="w-11 h-11 rounded-full object-contain"
+              />
+            </button>
           </div>
+
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-foreground/60">
             {todayLabel}
           </p>
