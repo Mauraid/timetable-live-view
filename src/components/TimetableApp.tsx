@@ -7,7 +7,8 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Upload } from 'lucide-react';
+import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub';
@@ -23,7 +24,13 @@ const SHEETS = [
   { id: 'loz', name: 'Skate Camp LOZ', gid: '1660538128', kind: 'timetable' as const },
   { id: 'bcn', name: 'Skate Camp BCN', gid: '727608527', kind: 'timetable' as const },
   { id: 'dc', name: 'SkateCamp DC', gid: '122183591', kind: 'timetable' as const },
+  { id: 'photos', name: 'Photos', gid: '', kind: 'photos' as const },
 ];
+
+const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
+const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDER_ID}`;
+const PHOTOS_EMBED_URL = `https://drive.google.com/embeddedfolderview?id=${PHOTOS_FOLDER_ID}#grid`;
+
 
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
@@ -155,14 +162,15 @@ export const TimetableApp = () => {
     setLoading(true);
     try {
       const ts = Date.now();
+      const dataSheets = SHEETS.filter((s) => s.kind !== 'photos');
       const responses = await Promise.all(
-        SHEETS.map((s) => fetch(`${sheetUrl(s.gid)}&timestamp=${ts}`))
+        dataSheets.map((s) => fetch(`${sheetUrl(s.gid)}&timestamp=${ts}`))
       );
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
       let nextIntro: string[] = [];
-      SHEETS.forEach((sheet, i) => {
+      dataSheets.forEach((sheet, i) => {
         const text = texts[i];
         if (sheet.kind === 'text') {
           nextIntro = parseTextSheet(text);
@@ -257,7 +265,24 @@ export const TimetableApp = () => {
                 Your camp. Your schedule. Your skate.
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab('photos');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              aria-label="Go to Photos"
+              title="Photos by Ponio Photography"
+              className="ml-auto shrink-0 rounded-full bg-ink-foreground p-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ink transition-transform hover:scale-105"
+            >
+              <img
+                src={ponioLogo.url}
+                alt="Ponio Photography"
+                className="w-11 h-11 rounded-full object-contain"
+              />
+            </button>
           </div>
+
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink-foreground/60">
             {todayLabel}
           </p>
@@ -325,6 +350,43 @@ export const TimetableApp = () => {
                         <ExternalLink className="w-4 h-4" />
                       </a>
                     </div>
+                  </div>
+                ) : sheet.kind === 'photos' ? (
+                  <div className="space-y-5">
+                    <div className="rounded-3xl bg-card border border-border p-5 shadow-soft space-y-4">
+                      <h2 className="font-display text-2xl font-bold uppercase tracking-tight">
+                        Skate Camp Official photos
+                      </h2>
+                      <div className="flex flex-wrap gap-3">
+                        <a
+                          href={PHOTOS_FOLDER_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                        >
+                          View &amp; download photos
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                        <a
+                          href={PHOTOS_FOLDER_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                        >
+                          Upload your photos
+                          <Upload className="w-4 h-4" />
+                        </a>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Photos by Ponio Photography. The folder opens in Google Drive, where you can
+                        download or add your own shots.
+                      </p>
+                    </div>
+                    <iframe
+                      src={PHOTOS_EMBED_URL}
+                      title="Skate Camp official photos folder"
+                      className="w-full h-[520px] rounded-3xl border border-border bg-card shadow-soft"
+                    />
                   </div>
                 ) : (
                   <>
