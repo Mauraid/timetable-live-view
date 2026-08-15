@@ -357,6 +357,25 @@ export const TimetableApp = () => {
                       <h2 className="font-display text-2xl font-bold uppercase tracking-tight">
                         Skate Camp Official photos
                       </h2>
+                      <div className="space-y-3 text-sm leading-relaxed text-foreground">
+                        <p>
+                          Here you’ll find the official photos from our camp! Please feel free to
+                          download photos of yourself, as well as group photos. When sharing, please
+                          remember to credit our Skate Camp photographer,{' '}
+                          <a
+                            href="https://www.instagram.com/ponio1410"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-primary underline underline-offset-2"
+                          >
+                            @ponio1410
+                          </a>{' '}
+                          on Instagram, and tag our Skate Camp World pages using the links at the
+                          bottom of the page. Where relevant, please also tag our instructors.
+                        </p>
+                        <p>Thank you, and enjoy the photos!</p>
+                      </div>
+
                       <div className="flex flex-wrap gap-3">
                         <a
                           href={PHOTOS_FOLDER_URL}
