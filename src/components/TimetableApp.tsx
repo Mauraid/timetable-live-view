@@ -7,7 +7,8 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Upload } from 'lucide-react';
+import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSqRHc06sDjAFqbu41pzeJK0QHB9YSovLUaRhBu7tbsMcpiZJgH-JAOuJUi-Omy8-6TUdDeGNp0-RXg/pub';
