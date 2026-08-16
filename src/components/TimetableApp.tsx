@@ -7,7 +7,7 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink, Upload } from 'lucide-react';
+import { ExternalLink, Images, CloudUpload, Camera } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
@@ -376,24 +376,34 @@ export const TimetableApp = () => {
                         <p>Thank you, and enjoy the photos!</p>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <a
                           href={PHOTOS_FOLDER_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
+                          className="group flex items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-medium"
                         >
-                          View &amp; download photos
-                          <ExternalLink className="w-4 h-4" />
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15 transition-transform group-hover:scale-110 group-hover:rotate-3">
+                            <Images className="h-5 w-5" />
+                          </span>
+                          <span className="min-w-0 text-left">
+                            <span className="block text-sm font-bold leading-tight">View &amp; download</span>
+                            <span className="block text-xs opacity-80">Browse the full gallery</span>
+                          </span>
                         </a>
                         <a
                           href={PHOTOS_FOLDER_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                          className="group flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-foreground shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-medium"
                         >
-                          Upload your photos
-                          <Upload className="w-4 h-4" />
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110 group-hover:-rotate-3">
+                            <CloudUpload className="h-5 w-5" />
+                          </span>
+                          <span className="min-w-0 text-left">
+                            <span className="block text-sm font-bold leading-tight">Upload your photos</span>
+                            <span className="block text-xs text-muted-foreground">Add your own shots</span>
+                          </span>
                         </a>
                       </div>
                       <p className="text-sm text-muted-foreground">
