@@ -354,7 +354,10 @@ export const TimetableApp = () => {
                 ) : sheet.kind === 'photos' ? (
                   <div className="space-y-5">
                     <div className="rounded-3xl bg-card border border-border p-5 shadow-soft space-y-4">
-                      <h2 className="font-display text-2xl font-bold uppercase tracking-tight">
+                      <h2 className="flex items-center gap-2.5 font-display text-2xl font-bold uppercase tracking-tight">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                          <Camera className="h-5 w-5" />
+                        </span>
                         Skate Camp Official photos
                       </h2>
                       <div className="space-y-3 text-sm leading-relaxed text-foreground">
