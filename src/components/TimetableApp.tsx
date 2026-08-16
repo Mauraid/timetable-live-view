@@ -29,7 +29,7 @@ const SHEETS = [
 
 const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
 const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDER_ID}`;
-const PHOTOS_EMBED_URL = `https://drive.google.com/embeddedfolderview?id=${PHOTOS_FOLDER_ID}#grid`;
+
 
 
 export const TimetableApp = () => {
