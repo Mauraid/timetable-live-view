@@ -7,7 +7,7 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink, Images, CloudUpload, Camera } from 'lucide-react';
+import { ExternalLink, Images, CloudUpload, Camera, Users } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
@@ -379,46 +379,53 @@ export const TimetableApp = () => {
                         <p>Thank you, and enjoy the photos!</p>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <a
-                          href={PHOTOS_FOLDER_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group flex items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground shadow-soft transition-all hover:-translate-y-0.5 hover:shadow-medium"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15 transition-transform group-hover:scale-110 group-hover:rotate-3">
-                            <Images className="h-5 w-5" />
-                          </span>
-                          <span className="min-w-0 text-left">
-                            <span className="block text-sm font-bold leading-tight">View &amp; download</span>
-                            <span className="block text-xs opacity-80">Browse the full gallery</span>
-                          </span>
-                        </a>
-                        <a
-                          href={PHOTOS_FOLDER_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-foreground shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-medium"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110 group-hover:-rotate-3">
-                            <CloudUpload className="h-5 w-5" />
-                          </span>
-                          <span className="min-w-0 text-left">
-                            <span className="block text-sm font-bold leading-tight">Upload your photos</span>
-                            <span className="block text-xs text-muted-foreground">Add your own shots</span>
-                          </span>
-                        </a>
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {[
+                          {
+                            icon: Images,
+                            label: 'All photos',
+                            desc: 'Browse the full gallery',
+                            tone: 'bg-brand-blue/10 text-brand-blue',
+                          },
+                          {
+                            icon: Users,
+                            label: 'Group shots',
+                            desc: 'Find your crew',
+                            tone: 'bg-brand-green/10 text-brand-green',
+                          },
+                          {
+                            icon: CloudUpload,
+                            label: 'Upload your photos',
+                            desc: 'Add your own shots',
+                            tone: 'bg-brand-orange/10 text-brand-orange',
+                          },
+                        ].map(({ icon: Icon, label, desc, tone }) => (
+                          <a
+                            key={label}
+                            href={PHOTOS_FOLDER_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col gap-3 rounded-3xl border border-border bg-card p-5 shadow-soft transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-medium"
+                          >
+                            <span
+                              className={`flex h-12 w-12 items-center justify-center rounded-2xl ${tone} transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6`}
+                            >
+                              <Icon className="h-6 w-6" />
+                            </span>
+                            <span>
+                              <span className="block font-display text-lg font-bold uppercase tracking-tight leading-tight">
+                                {label}
+                              </span>
+                              <span className="block text-sm text-muted-foreground">{desc}</span>
+                            </span>
+                          </a>
+                        ))}
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        Photos by Ponio Photography. The folder opens in Google Drive, where you can
-                        download or add your own shots.
+                      <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <ExternalLink className="h-4 w-4 shrink-0" />
+                        Opens in Google Drive — photos by Ponio Photography.
                       </p>
                     </div>
-                    <iframe
-                      src={PHOTOS_EMBED_URL}
-                      title="Skate Camp official photos folder"
-                      className="w-full h-[520px] rounded-3xl border border-border bg-card shadow-soft"
-                    />
                   </div>
                 ) : (
                   <>
