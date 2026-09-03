@@ -1,14 +1,20 @@
-import { Clock, MapPin, User, ArrowRight, Radio, CalendarClock } from 'lucide-react';
+import { Clock, MapPin, User, ArrowRight, Radio, CalendarClock, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDateShort, formatRelative, type SessionWithSource } from '@/lib/session-utils';
+import { formatDateShort, formatRelative, type EventRange, type SessionWithSource } from '@/lib/session-utils';
 import { sessionKey } from './TimetableGrid';
 
 interface NowNextProps {
   current: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
   next: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
+  upcomingEvent?: EventRange | null;
   loading: boolean;
   onOpenToday: (sourceId: string, date: string, key?: string) => void;
 }
+
+const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+
+const formatDay = (d: Date) =>
+  d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
 const Detail = ({ icon: Icon, text, muted }: { icon: typeof Clock; text: string; muted?: boolean }) => (
   <div className={`flex items-start gap-2 text-sm ${muted ? 'text-muted-foreground' : 'text-ink-foreground/85'}`}>
@@ -17,9 +23,10 @@ const Detail = ({ icon: Icon, text, muted }: { icon: typeof Clock; text: string;
   </div>
 );
 
-export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) => {
+export const NowNext = ({ current, next, upcomingEvent, loading, onOpenToday }: NowNextProps) => {
   const primary = current ?? next;
   const isLive = !!current;
+  const isFarAway = !current && !!next && next.range.start.getTime() - Date.now() > TWO_WEEKS_MS;
 
   const target = primary?.session;
   const jump = () => {
@@ -69,8 +76,24 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
           )}
         </div>
 
-        {loading && !primary ? (
+        {loading && !primary && !upcomingEvent ? (
           <p className="text-ink-foreground/70">Loading schedule…</p>
+        ) : isFarAway && upcomingEvent ? (
+          <>
+            <h2 className="text-3xl font-display font-bold leading-tight mb-1">
+              {upcomingEvent.sourceName}
+            </h2>
+            <p className="text-sm text-ink-foreground/70 mb-4">
+              {formatRelative(upcomingEvent.start)}
+            </p>
+            <div className="space-y-2">
+              <Detail
+                icon={CalendarDays}
+                text={`${formatDay(upcomingEvent.start)} – ${formatDay(upcomingEvent.end)}`}
+              />
+              {upcomingEvent.location && <Detail icon={MapPin} text={upcomingEvent.location} />}
+            </div>
+          </>
         ) : primary ? (
           <>
             <h2 className="text-2xl font-bold leading-tight mb-1">
@@ -84,6 +107,22 @@ export const NowNext = ({ current, next, loading, onOpenToday }: NowNextProps) =
               {primary.session.time && <Detail icon={Clock} text={primary.session.time} />}
               {primary.session.location && <Detail icon={MapPin} text={primary.session.location} />}
               {primary.session.instructor && <Detail icon={User} text={primary.session.instructor} />}
+            </div>
+          </>
+        ) : upcomingEvent ? (
+          <>
+            <h2 className="text-3xl font-display font-bold leading-tight mb-1">
+              {upcomingEvent.sourceName}
+            </h2>
+            <p className="text-sm text-ink-foreground/70 mb-4">
+              {formatRelative(upcomingEvent.start)}
+            </p>
+            <div className="space-y-2">
+              <Detail
+                icon={CalendarDays}
+                text={`${formatDay(upcomingEvent.start)} – ${formatDay(upcomingEvent.end)}`}
+              />
+              {upcomingEvent.location && <Detail icon={MapPin} text={upcomingEvent.location} />}
             </div>
           </>
         ) : (

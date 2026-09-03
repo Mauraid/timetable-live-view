@@ -77,6 +77,47 @@ export const getSessionRange = (session: Session): { start: Date; end: Date } | 
 export const isSameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
+export interface EventRange {
+  sourceId: string;
+  sourceName: string;
+  location: string;
+  start: Date;
+  end: Date;
+}
+
+/** Compute the overall date range and primary location per programme (event). */
+export const getEventRanges = (sessions: SessionWithSource[]): EventRange[] => {
+  const bySource = new Map<string, SessionWithSource[]>();
+  for (const s of sessions) {
+    const list = bySource.get(s.sourceId) ?? [];
+    list.push(s);
+    bySource.set(s.sourceId, list);
+  }
+
+  const ranges: EventRange[] = [];
+  for (const [sourceId, list] of bySource) {
+    const starts = list
+      .map((s) => getSessionRange(s)?.start ?? null)
+      .filter((d): d is Date => !!d)
+      .sort((a, b) => a.getTime() - b.getTime());
+    if (!starts.length) continue;
+    const ends = list
+      .map((s) => getSessionRange(s)?.end ?? null)
+      .filter((d): d is Date => !!d)
+      .sort((a, b) => a.getTime() - b.getTime());
+    const location = list.find((s) => s.location)?.location ?? '';
+    ranges.push({
+      sourceId,
+      sourceName: list[0].sourceName,
+      location,
+      start: starts[0],
+      end: ends.length ? ends[ends.length - 1] : starts[starts.length - 1],
+    });
+  }
+
+  return ranges.sort((a, b) => a.start.getTime() - b.start.getTime());
+};
+
 /** Find the session happening right now and the next upcoming one. */
 export const getNowAndNext = (sessions: SessionWithSource[], reference: Date = new Date()) => {
   const timed = sessions
