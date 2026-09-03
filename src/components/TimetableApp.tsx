@@ -34,7 +34,9 @@ const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDE
 
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
+  const [eventTitles, setEventTitles] = useState<Record<string, string>>({});
   const [introLines, setIntroLines] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
