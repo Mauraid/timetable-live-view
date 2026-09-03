@@ -86,6 +86,22 @@ export const TimetableApp = () => {
     return rows;
   };
 
+  /** Row one of each sheet holds the event title (and date range, when present). */
+  const parseSheetTitle = (csvText: string): string => {
+    for (const line of splitRows(csvText)) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const fields = parseCSVLine(trimmed);
+      const first = (fields[0] || '').trim();
+      if (!first) continue;
+      if (first.toLowerCase() === 'date') return '';
+      // A title row has content in the first cell and nothing meaningful after it
+      const rest = fields.slice(1).filter((f) => f.trim()).length;
+      return rest === 0 ? first : '';
+    }
+    return '';
+  };
+
   const parseCSV = (csvText: string): Session[] => {
     const parsed: Session[] = [];
     for (const line of splitRows(csvText)) {
@@ -113,6 +129,7 @@ export const TimetableApp = () => {
     }
     return parsed;
   };
+
 
   const parseTextSheet = (csvText: string): string[] =>
     splitRows(csvText)
