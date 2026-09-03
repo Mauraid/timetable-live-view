@@ -485,6 +485,28 @@ export const TimetableApp = () => {
 
       <footer className="border-t border-border bg-card py-6">
         <div className="mx-auto w-full max-w-3xl px-5 flex flex-col items-center gap-4 text-sm text-muted-foreground">
+          {archivedSheets.length > 0 && (
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                Past events
+              </span>
+              <div className="flex flex-wrap justify-center gap-2">
+                {archivedSheets.map((sheet) => (
+                  <button
+                    key={sheet.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(sheet.id);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  >
+                    {sheet.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-4">
             <a
               href="https://www.instagram.com/skatecampworld/"
