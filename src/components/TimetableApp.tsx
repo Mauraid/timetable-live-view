@@ -6,7 +6,7 @@ import { DateDropdown } from './DateDropdown';
 import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
-import { getNowAndNext, type Session, type SessionWithSource } from '@/lib/session-utils';
+import { getNowAndNext, getEventRanges, type Session, type SessionWithSource } from '@/lib/session-utils';
 import { ExternalLink, Images, CloudUpload, Camera, Users } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
@@ -220,6 +220,29 @@ export const TimetableApp = () => {
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
+  const eventRanges = useMemo(() => getEventRanges(allSessions), [allSessions]);
+
+  /** Nearest event whose sessions all lie in the future (or are running today). */
+  const upcomingEvent = useMemo(
+    () => eventRanges.find((r) => r.end.getTime() > now.getTime()) ?? null,
+    [eventRanges, now]
+  );
+
+  /** Programmes with no upcoming sessions — hidden from the tab bar, listed in the footer. */
+  const archivedIds = useMemo(() => {
+    const set = new Set<string>();
+    for (const sheet of SHEETS) {
+      if (sheet.kind !== 'timetable') continue;
+      const list = sessions[sheet.id] || [];
+      if (!list.length) continue; // not loaded yet — keep visible
+      const range = eventRanges.find((r) => r.sourceId === sheet.id);
+      if (range && range.end.getTime() <= now.getTime()) set.add(sheet.id);
+    }
+    return set;
+  }, [sessions, eventRanges, now]);
+
+  const archivedSheets = SHEETS.filter((s) => archivedIds.has(s.id));
+
   const openToday = (sourceId: string, date: string, key?: string) => {
     setActiveTab(sourceId);
     setSelectedDates((prev) => ({ ...prev, [sourceId]: date }));
@@ -294,7 +317,7 @@ export const TimetableApp = () => {
           <div className="space-y-5">
             <div className="-mx-5 px-5 overflow-x-auto no-scrollbar">
               <TabsList className="inline-flex h-auto w-max gap-1 rounded-full bg-card p-1 shadow-soft border border-border">
-                {SHEETS.map((sheet) => (
+                {SHEETS.filter((sheet) => !archivedIds.has(sheet.id) || sheet.id === activeTab).map((sheet) => (
                   <TabsTrigger
                     key={sheet.id}
                     value={sheet.id}
@@ -308,7 +331,13 @@ export const TimetableApp = () => {
           </div>
 
           {activeTab === 'intro' && (
-            <NowNext current={current} next={next} loading={loading} onOpenToday={openToday} />
+            <NowNext
+              current={current}
+              next={next}
+              upcomingEvent={upcomingEvent}
+              loading={loading}
+              onOpenToday={openToday}
+            />
           )}
 
           <StatusStrip
@@ -385,32 +414,35 @@ export const TimetableApp = () => {
                             icon: Images,
                             label: 'All photos',
                             desc: 'Browse the full gallery',
-                            tone: 'bg-brand-blue/10 text-brand-blue',
+                            tile: 'bg-brand-blue text-white',
+                            tint: 'bg-brand-blue/5 hover:border-brand-blue/50',
                           },
                           {
                             icon: Users,
                             label: 'Group shots',
                             desc: 'Find your crew',
-                            tone: 'bg-brand-green/10 text-brand-green',
+                            tile: 'bg-brand-green text-white',
+                            tint: 'bg-brand-green/5 hover:border-brand-green/50',
                           },
                           {
                             icon: CloudUpload,
                             label: 'Upload your photos',
                             desc: 'Add your own shots',
-                            tone: 'bg-brand-orange/10 text-brand-orange',
+                            tile: 'bg-brand-orange text-white',
+                            tint: 'bg-brand-orange/5 hover:border-brand-orange/50',
                           },
-                        ].map(({ icon: Icon, label, desc, tone }) => (
+                        ].map(({ icon: Icon, label, desc, tile, tint }) => (
                           <a
                             key={label}
                             href={PHOTOS_FOLDER_URL}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex flex-col gap-3 rounded-3xl border border-border bg-card p-5 shadow-soft transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-medium"
+                            className={`group relative overflow-hidden flex flex-col gap-3 rounded-3xl border border-border p-5 shadow-soft transition-all duration-200 hover:-translate-y-1 hover:shadow-medium ${tint}`}
                           >
                             <span
-                              className={`flex h-12 w-12 items-center justify-center rounded-2xl ${tone} transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6`}
+                              className={`relative flex h-14 w-14 items-center justify-center rounded-2xl ${tile} shadow-medium transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6`}
                             >
-                              <Icon className="h-6 w-6" />
+                              <Icon className="h-7 w-7" strokeWidth={2.25} />
                             </span>
                             <span>
                               <span className="block font-display text-lg font-bold uppercase tracking-tight leading-tight">
