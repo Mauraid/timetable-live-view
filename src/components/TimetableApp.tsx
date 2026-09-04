@@ -191,6 +191,7 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
+      const nextTitles: Record<string, string> = {};
       let nextIntro: string[] = [];
       dataSheets.forEach((sheet, i) => {
         const text = texts[i];
@@ -198,18 +199,22 @@ export const TimetableApp = () => {
           nextIntro = parseTextSheet(text);
         } else {
           nextSessions[sheet.id] = parseCSV(text);
+          const title = parseSheetTitle(text);
+          if (title) nextTitles[sheet.id] = title;
         }
       });
       const updatedAt = new Date();
       setSessions(nextSessions);
       setIntroLines(nextIntro);
+      setEventTitles(nextTitles);
       setLastUpdated(updatedAt);
 
       try {
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, eventTitles: nextTitles, lastUpdated: updatedAt.toISOString() })
         );
+
         setOfflineReady(true);
       } catch {
         /* storage full or unavailable */
