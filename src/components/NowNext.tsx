@@ -25,7 +25,7 @@ const Detail = ({ icon: Icon, text, muted }: { icon: typeof Clock; text: string;
   </div>
 );
 
-export const NowNext = ({ current, next, upcomingEvent, loading, onOpenToday }: NowNextProps) => {
+export const NowNext = ({ current, next, upcomingEvent, eventHeader, loading, onOpenToday }: NowNextProps) => {
   const primary = current ?? next;
   const isLive = !!current;
   const isFarAway = !current && !!next && next.range.start.getTime() - Date.now() > TWO_WEEKS_MS;
@@ -85,6 +85,9 @@ export const NowNext = ({ current, next, upcomingEvent, loading, onOpenToday }: 
             <h2 className="text-3xl font-display font-bold leading-tight mb-1">
               {upcomingEvent.sourceName}
             </h2>
+            {eventHeader ? (
+              <p className="text-lg font-semibold text-ink-foreground mb-1">{eventHeader}</p>
+            ) : null}
             <p className="text-sm text-ink-foreground/70 mb-4">
               {formatRelative(upcomingEvent.start)}
             </p>
