@@ -418,7 +418,7 @@ export const TimetableApp = () => {
                         <p>Thank you, and enjoy the photos!</p>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         {[
                           {
                             icon: Images,
@@ -426,13 +426,6 @@ export const TimetableApp = () => {
                             desc: 'Browse the full gallery',
                             tile: 'bg-brand-blue text-primary-foreground',
                             tint: 'bg-brand-blue/5 hover:border-brand-blue/50',
-                          },
-                          {
-                            icon: Users,
-                            label: 'Group shots',
-                            desc: 'Find your crew',
-                            tile: 'bg-brand-green text-primary-foreground',
-                            tint: 'bg-brand-green/5 hover:border-brand-green/50',
                           },
                           {
                             icon: CloudUpload,
