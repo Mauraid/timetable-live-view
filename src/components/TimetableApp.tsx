@@ -35,6 +35,7 @@ const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDE
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
   const [introLines, setIntroLines] = useState<string[]>([]);
+  const [sheetTitles, setSheetTitles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
@@ -128,10 +129,12 @@ export const TimetableApp = () => {
         const cached = JSON.parse(raw) as {
           sessions: Record<string, Session[]>;
           introLines: string[];
+          sheetTitles?: Record<string, string>;
           lastUpdated: string;
         };
         setSessions(cached.sessions || {});
         setIntroLines(cached.introLines || []);
+        setSheetTitles(cached.sheetTitles || {});
         setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
         setOfflineReady(true);
       }
@@ -169,24 +172,30 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
+      const nextTitles: Record<string, string> = {};
       let nextIntro: string[] = [];
       dataSheets.forEach((sheet, i) => {
         const text = texts[i];
         if (sheet.kind === 'text') {
           nextIntro = parseTextSheet(text);
         } else {
+          // Row 1 of each timetable tab holds the event title (e.g. "Skate Camp BCN, Spain")
+          const firstRow = splitRows(text)[0];
+          const title = firstRow ? parseCSVLine(firstRow)[0]?.trim() : '';
+          if (title && title.toLowerCase() !== 'date') nextTitles[sheet.id] = title;
           nextSessions[sheet.id] = parseCSV(text);
         }
       });
       const updatedAt = new Date();
       setSessions(nextSessions);
       setIntroLines(nextIntro);
+      setSheetTitles(nextTitles);
       setLastUpdated(updatedAt);
 
       try {
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, sheetTitles: nextTitles, lastUpdated: updatedAt.toISOString() })
         );
         setOfflineReady(true);
       } catch {
@@ -223,10 +232,11 @@ export const TimetableApp = () => {
   const eventRanges = useMemo(() => getEventRanges(allSessions), [allSessions]);
 
   /** Nearest event whose sessions all lie in the future (or are running today). */
-  const upcomingEvent = useMemo(
-    () => eventRanges.find((r) => r.end.getTime() > now.getTime()) ?? null,
-    [eventRanges, now]
-  );
+  const upcomingEvent = useMemo(() => {
+    const range = eventRanges.find((r) => r.end.getTime() > now.getTime()) ?? null;
+    // Prefer the event title written in row 1 of the sheet tab
+    return range ? { ...range, sourceName: sheetTitles[range.sourceId] || range.sourceName } : null;
+  }, [eventRanges, now, sheetTitles]);
 
   /** Programmes with no upcoming sessions — hidden from the tab bar, listed in the footer. */
   const archivedIds = useMemo(() => {
