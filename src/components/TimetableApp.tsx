@@ -147,11 +147,14 @@ export const TimetableApp = () => {
         const cached = JSON.parse(raw) as {
           sessions: Record<string, Session[]>;
           introLines: string[];
+          eventTitles?: Record<string, string>;
           lastUpdated: string;
         };
         setSessions(cached.sessions || {});
         setIntroLines(cached.introLines || []);
+        setEventTitles(cached.eventTitles || {});
         setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
+
         setOfflineReady(true);
       }
     } catch {
