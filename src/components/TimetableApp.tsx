@@ -7,7 +7,7 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, getEventRanges, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink, Images, CloudUpload, Camera, Users } from 'lucide-react';
+import { ExternalLink, Images, CloudUpload, Camera } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
@@ -24,7 +24,7 @@ const SHEETS = [
   { id: 'loz', name: 'Skate Camp LOZ', gid: '1660538128', kind: 'timetable' as const },
   { id: 'bcn', name: 'Skate Camp BCN', gid: '727608527', kind: 'timetable' as const },
   { id: 'dc', name: 'SkateCamp DC', gid: '122183591', kind: 'timetable' as const },
-  { id: 'photos', name: 'Photos', gid: '', kind: 'photos' as const },
+  { id: 'photos', name: 'Gallery', gid: '', kind: 'photos' as const },
 ];
 
 const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
@@ -304,8 +304,8 @@ export const TimetableApp = () => {
                 setActiveTab('photos');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              aria-label="Go to Photos"
-              title="Photos by Ponio Photography"
+              aria-label="Go to Gallery"
+              title="Gallery by Ponio Photography"
               className="ml-auto shrink-0 rounded-full bg-ink-foreground p-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-ink transition-transform hover:scale-105"
             >
               <img
@@ -418,7 +418,7 @@ export const TimetableApp = () => {
                         <p>Thank you, and enjoy the photos!</p>
                       </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         {[
                           {
                             icon: Images,
@@ -426,13 +426,6 @@ export const TimetableApp = () => {
                             desc: 'Browse the full gallery',
                             tile: 'bg-brand-blue text-primary-foreground',
                             tint: 'bg-brand-blue/5 hover:border-brand-blue/50',
-                          },
-                          {
-                            icon: Users,
-                            label: 'Group shots',
-                            desc: 'Find your crew',
-                            tile: 'bg-brand-green text-primary-foreground',
-                            tint: 'bg-brand-green/5 hover:border-brand-green/50',
                           },
                           {
                             icon: CloudUpload,
