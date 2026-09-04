@@ -240,10 +240,15 @@ export const TimetableApp = () => {
   const allSessions: SessionWithSource[] = useMemo(
     () =>
       SHEETS.filter((s) => s.kind === 'timetable').flatMap((sheet) =>
-        (sessions[sheet.id] || []).map((s) => ({ ...s, sourceId: sheet.id, sourceName: sheet.name }))
+        (sessions[sheet.id] || []).map((s) => ({
+          ...s,
+          sourceId: sheet.id,
+          sourceName: eventTitles[sheet.id] || sheet.name,
+        }))
       ),
-    [sessions]
+    [sessions, eventTitles]
   );
+
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
