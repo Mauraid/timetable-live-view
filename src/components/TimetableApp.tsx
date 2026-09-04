@@ -533,7 +533,7 @@ export const TimetableApp = () => {
                     }}
                     className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {sheet.name}
+                    {eventTitles[sheet.id] || sheet.name}
                   </button>
                 ))}
               </div>
