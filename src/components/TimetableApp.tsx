@@ -24,7 +24,7 @@ const SHEETS = [
   { id: 'loz', name: 'Skate Camp LOZ', gid: '1660538128', kind: 'timetable' as const },
   { id: 'bcn', name: 'Skate Camp BCN', gid: '727608527', kind: 'timetable' as const },
   { id: 'dc', name: 'SkateCamp DC', gid: '122183591', kind: 'timetable' as const },
-  { id: 'photos', name: 'Photos', gid: '', kind: 'photos' as const },
+  { id: 'photos', name: 'Gallery', gid: '', kind: 'photos' as const },
 ];
 
 const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
