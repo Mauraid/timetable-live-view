@@ -35,6 +35,7 @@ const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDE
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
   const [introLines, setIntroLines] = useState<string[]>([]);
+  const [eventHeaders, setEventHeaders] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
@@ -84,6 +85,13 @@ export const TimetableApp = () => {
     }
     if (cur.length) rows.push(cur);
     return rows;
+  };
+
+  /** Row 1 of a sheet: event title / date line shown in the hero card. */
+  const parseHeaderRow = (csvText: string): string => {
+    const firstRow = splitRows(csvText)[0];
+    if (!firstRow) return '';
+    return parseCSVLine(firstRow).filter(Boolean).join(' · ');
   };
 
   const parseCSV = (csvText: string): Session[] => {
