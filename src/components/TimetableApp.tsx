@@ -7,7 +7,7 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, getEventRanges, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink, Images, CloudUpload, Camera, Users } from 'lucide-react';
+import { ExternalLink, Images, CloudUpload, Camera } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
