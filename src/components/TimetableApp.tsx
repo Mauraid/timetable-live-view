@@ -34,9 +34,7 @@ const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDE
 
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
-  const [eventTitles, setEventTitles] = useState<Record<string, string>>({});
   const [introLines, setIntroLines] = useState<string[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
@@ -88,22 +86,6 @@ export const TimetableApp = () => {
     return rows;
   };
 
-  /** Row one of each sheet holds the event title (and date range, when present). */
-  const parseSheetTitle = (csvText: string): string => {
-    for (const line of splitRows(csvText)) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      const fields = parseCSVLine(trimmed);
-      const first = (fields[0] || '').trim();
-      if (!first) continue;
-      if (first.toLowerCase() === 'date') return '';
-      // A title row has content in the first cell and nothing meaningful after it
-      const rest = fields.slice(1).filter((f) => f.trim()).length;
-      return rest === 0 ? first : '';
-    }
-    return '';
-  };
-
   const parseCSV = (csvText: string): Session[] => {
     const parsed: Session[] = [];
     for (const line of splitRows(csvText)) {
@@ -132,7 +114,6 @@ export const TimetableApp = () => {
     return parsed;
   };
 
-
   const parseTextSheet = (csvText: string): string[] =>
     splitRows(csvText)
       .flatMap((row) => parseCSVLine(row.trim()))
@@ -147,14 +128,11 @@ export const TimetableApp = () => {
         const cached = JSON.parse(raw) as {
           sessions: Record<string, Session[]>;
           introLines: string[];
-          eventTitles?: Record<string, string>;
           lastUpdated: string;
         };
         setSessions(cached.sessions || {});
         setIntroLines(cached.introLines || []);
-        setEventTitles(cached.eventTitles || {});
         setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
-
         setOfflineReady(true);
       }
     } catch {
@@ -191,7 +169,6 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
-      const nextTitles: Record<string, string> = {};
       let nextIntro: string[] = [];
       dataSheets.forEach((sheet, i) => {
         const text = texts[i];
@@ -199,22 +176,18 @@ export const TimetableApp = () => {
           nextIntro = parseTextSheet(text);
         } else {
           nextSessions[sheet.id] = parseCSV(text);
-          const title = parseSheetTitle(text);
-          if (title) nextTitles[sheet.id] = title;
         }
       });
       const updatedAt = new Date();
       setSessions(nextSessions);
       setIntroLines(nextIntro);
-      setEventTitles(nextTitles);
       setLastUpdated(updatedAt);
 
       try {
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, eventTitles: nextTitles, lastUpdated: updatedAt.toISOString() })
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
         );
-
         setOfflineReady(true);
       } catch {
         /* storage full or unavailable */
@@ -240,15 +213,10 @@ export const TimetableApp = () => {
   const allSessions: SessionWithSource[] = useMemo(
     () =>
       SHEETS.filter((s) => s.kind === 'timetable').flatMap((sheet) =>
-        (sessions[sheet.id] || []).map((s) => ({
-          ...s,
-          sourceId: sheet.id,
-          sourceName: eventTitles[sheet.id] || sheet.name,
-        }))
+        (sessions[sheet.id] || []).map((s) => ({ ...s, sourceId: sheet.id, sourceName: sheet.name }))
       ),
-    [sessions, eventTitles]
+    [sessions]
   );
-
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
@@ -533,7 +501,7 @@ export const TimetableApp = () => {
                     }}
                     className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {eventTitles[sheet.id] || sheet.name}
+                    {sheet.name}
                   </button>
                 ))}
               </div>
