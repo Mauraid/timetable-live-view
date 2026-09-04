@@ -7,6 +7,8 @@ interface NowNextProps {
   current: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
   next: { session: SessionWithSource; range: { start: Date; end: Date } } | null;
   upcomingEvent?: EventRange | null;
+  /** Row 1 text from the event's Google Sheet tab (event title + dates). */
+  eventHeader?: string;
   loading: boolean;
   onOpenToday: (sourceId: string, date: string, key?: string) => void;
 }

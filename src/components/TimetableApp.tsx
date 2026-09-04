@@ -348,6 +348,7 @@ export const TimetableApp = () => {
               current={current}
               next={next}
               upcomingEvent={upcomingEvent}
+              eventHeader={upcomingEvent ? eventHeaders[upcomingEvent.sourceId] : undefined}
               loading={loading}
               onOpenToday={openToday}
             />
