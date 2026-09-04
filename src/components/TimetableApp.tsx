@@ -7,7 +7,7 @@ import { NowNext } from './NowNext';
 import { StatusStrip } from './StatusStrip';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { getNowAndNext, getEventRanges, type Session, type SessionWithSource } from '@/lib/session-utils';
-import { ExternalLink, Images, CloudUpload, Camera } from 'lucide-react';
+import { ExternalLink, Images, CloudUpload, Camera, Users } from 'lucide-react';
 import ponioLogo from '@/assets/ponio-logo.png.asset.json';
 
 const CSV_BASE =
@@ -24,7 +24,7 @@ const SHEETS = [
   { id: 'loz', name: 'Skate Camp LOZ', gid: '1660538128', kind: 'timetable' as const },
   { id: 'bcn', name: 'Skate Camp BCN', gid: '727608527', kind: 'timetable' as const },
   { id: 'dc', name: 'SkateCamp DC', gid: '122183591', kind: 'timetable' as const },
-  { id: 'photos', name: 'Gallery', gid: '', kind: 'photos' as const },
+  { id: 'photos', name: 'Photos', gid: '', kind: 'photos' as const },
 ];
 
 const PHOTOS_FOLDER_ID = '1t2MUvUJwa9cekwBM_saLsVjYNw-GTtNp';
@@ -35,7 +35,6 @@ const PHOTOS_FOLDER_URL = `https://drive.google.com/drive/folders/${PHOTOS_FOLDE
 export const TimetableApp = () => {
   const [sessions, setSessions] = useState<Record<string, Session[]>>({});
   const [introLines, setIntroLines] = useState<string[]>([]);
-  const [eventHeaders, setEventHeaders] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offlineReady, setOfflineReady] = useState(false);
@@ -87,13 +86,6 @@ export const TimetableApp = () => {
     return rows;
   };
 
-  /** Row 1 of a sheet: event title / date line shown in the hero card. */
-  const parseHeaderRow = (csvText: string): string => {
-    const firstRow = splitRows(csvText)[0];
-    if (!firstRow) return '';
-    return parseCSVLine(firstRow).filter(Boolean).join(' · ');
-  };
-
   const parseCSV = (csvText: string): Session[] => {
     const parsed: Session[] = [];
     for (const line of splitRows(csvText)) {
@@ -136,12 +128,10 @@ export const TimetableApp = () => {
         const cached = JSON.parse(raw) as {
           sessions: Record<string, Session[]>;
           introLines: string[];
-          eventHeaders?: Record<string, string>;
           lastUpdated: string;
         };
         setSessions(cached.sessions || {});
         setIntroLines(cached.introLines || []);
-        setEventHeaders(cached.eventHeaders || {});
         setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
         setOfflineReady(true);
       }
@@ -179,7 +169,6 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
-      const nextHeaders: Record<string, string> = {};
       let nextIntro: string[] = [];
       dataSheets.forEach((sheet, i) => {
         const text = texts[i];
@@ -187,19 +176,17 @@ export const TimetableApp = () => {
           nextIntro = parseTextSheet(text);
         } else {
           nextSessions[sheet.id] = parseCSV(text);
-          nextHeaders[sheet.id] = parseHeaderRow(text);
         }
       });
       const updatedAt = new Date();
       setSessions(nextSessions);
       setIntroLines(nextIntro);
-      setEventHeaders(nextHeaders);
       setLastUpdated(updatedAt);
 
       try {
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, eventHeaders: nextHeaders, lastUpdated: updatedAt.toISOString() })
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
         );
         setOfflineReady(true);
       } catch {
@@ -348,7 +335,6 @@ export const TimetableApp = () => {
               current={current}
               next={next}
               upcomingEvent={upcomingEvent}
-              eventHeader={upcomingEvent ? eventHeaders[upcomingEvent.sourceId] : undefined}
               loading={loading}
               onOpenToday={openToday}
             />
@@ -430,6 +416,13 @@ export const TimetableApp = () => {
                             desc: 'Browse the full gallery',
                             tile: 'bg-brand-blue text-primary-foreground',
                             tint: 'bg-brand-blue/5 hover:border-brand-blue/50',
+                          },
+                          {
+                            icon: Users,
+                            label: 'Group shots',
+                            desc: 'Find your crew',
+                            tile: 'bg-brand-green text-primary-foreground',
+                            tint: 'bg-brand-green/5 hover:border-brand-green/50',
                           },
                           {
                             icon: CloudUpload,
