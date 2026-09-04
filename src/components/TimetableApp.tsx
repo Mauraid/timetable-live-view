@@ -147,11 +147,14 @@ export const TimetableApp = () => {
         const cached = JSON.parse(raw) as {
           sessions: Record<string, Session[]>;
           introLines: string[];
+          eventTitles?: Record<string, string>;
           lastUpdated: string;
         };
         setSessions(cached.sessions || {});
         setIntroLines(cached.introLines || []);
+        setEventTitles(cached.eventTitles || {});
         setLastUpdated(cached.lastUpdated ? new Date(cached.lastUpdated) : null);
+
         setOfflineReady(true);
       }
     } catch {
@@ -188,6 +191,7 @@ export const TimetableApp = () => {
       const texts = await Promise.all(responses.map((r) => r.text()));
 
       const nextSessions: Record<string, Session[]> = {};
+      const nextTitles: Record<string, string> = {};
       let nextIntro: string[] = [];
       dataSheets.forEach((sheet, i) => {
         const text = texts[i];
@@ -195,18 +199,22 @@ export const TimetableApp = () => {
           nextIntro = parseTextSheet(text);
         } else {
           nextSessions[sheet.id] = parseCSV(text);
+          const title = parseSheetTitle(text);
+          if (title) nextTitles[sheet.id] = title;
         }
       });
       const updatedAt = new Date();
       setSessions(nextSessions);
       setIntroLines(nextIntro);
+      setEventTitles(nextTitles);
       setLastUpdated(updatedAt);
 
       try {
         localStorage.setItem(
           CACHE_KEY,
-          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, lastUpdated: updatedAt.toISOString() })
+          JSON.stringify({ sessions: nextSessions, introLines: nextIntro, eventTitles: nextTitles, lastUpdated: updatedAt.toISOString() })
         );
+
         setOfflineReady(true);
       } catch {
         /* storage full or unavailable */
@@ -232,10 +240,15 @@ export const TimetableApp = () => {
   const allSessions: SessionWithSource[] = useMemo(
     () =>
       SHEETS.filter((s) => s.kind === 'timetable').flatMap((sheet) =>
-        (sessions[sheet.id] || []).map((s) => ({ ...s, sourceId: sheet.id, sourceName: sheet.name }))
+        (sessions[sheet.id] || []).map((s) => ({
+          ...s,
+          sourceId: sheet.id,
+          sourceName: eventTitles[sheet.id] || sheet.name,
+        }))
       ),
-    [sessions]
+    [sessions, eventTitles]
   );
+
 
   const { current, next } = useMemo(() => getNowAndNext(allSessions, now), [allSessions, now]);
 
@@ -520,7 +533,7 @@ export const TimetableApp = () => {
                     }}
                     className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-xs font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {sheet.name}
+                    {eventTitles[sheet.id] || sheet.name}
                   </button>
                 ))}
               </div>
